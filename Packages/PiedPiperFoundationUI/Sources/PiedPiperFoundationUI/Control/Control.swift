@@ -13,6 +13,30 @@ open class Control: UIControl, ViewProtocol, ViewProtocolPrivate, UIInputEnviron
     
     final var inputChangesSystem: UIInputChangesSystem!
     
+    public final func setNeedsStateChanges() {
+        _setNeedsStateChanges()
+    }
+    
+    public final func changesStateIfNeeded() {
+        _changesStateIfNeeded()
+    }
+    
+    public final func setNeedsConfigurationChanges() {
+        _setNeedsConfigurationChanges()
+    }
+    
+    public final func changesConfigurationIfNeeded() {
+        _changesConfigurationIfNeeded()
+    }
+    
+    public final func withAnimatedChanges(_ changes: () -> Void) {
+        _withAnimatedChanges(changes)
+    }
+    
+    public final func withoutAnimatedChanges(_ changes: () -> Void) {
+        _withoutAnimatedChanges(changes)
+    }
+    
     // MARK: -
     
     final var setupFlags = SetupFlags()
@@ -28,7 +52,7 @@ open class Control: UIControl, ViewProtocol, ViewProtocolPrivate, UIInputEnviron
     
 	// MARK: -
 	
-	public final override class var requiresConstraintBasedLayout: Bool { true }
+	public override final class var requiresConstraintBasedLayout: Bool { true }
 	
 	open override func updateConstraints() {
 		_updateConstraints()

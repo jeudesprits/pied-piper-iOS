@@ -12,6 +12,30 @@ open class View: UIView, ViewProtocol, ViewProtocolPrivate, UIInputEnvironment, 
     // MARK: -
     
     final var inputChangesSystem: UIInputChangesSystem!
+    
+    public final func setNeedsStateChanges() {
+        _setNeedsStateChanges()
+    }
+    
+    public final func changesStateIfNeeded() {
+        _changesStateIfNeeded()
+    }
+    
+    public final func setNeedsConfigurationChanges() {
+        _setNeedsConfigurationChanges()
+    }
+    
+    public final func changesConfigurationIfNeeded() {
+        _changesConfigurationIfNeeded()
+    }
+    
+    public final func withAnimatedChanges(_ changes: () -> Void) {
+        _withAnimatedChanges(changes)
+    }
+    
+    public final func withoutAnimatedChanges(_ changes: () -> Void) {
+        _withoutAnimatedChanges(changes)
+    }
 	
 	// MARK: -
 	
@@ -28,7 +52,7 @@ open class View: UIView, ViewProtocol, ViewProtocolPrivate, UIInputEnvironment, 
 	
 	// MARK: -
 	
-	public override static var requiresConstraintBasedLayout: Bool { true }
+	public override final class var requiresConstraintBasedLayout: Bool { true }
 	
 	open override func updateConstraints() {
 		_updateConstraints()

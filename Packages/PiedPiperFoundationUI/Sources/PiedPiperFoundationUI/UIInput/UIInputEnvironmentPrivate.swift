@@ -17,27 +17,27 @@ protocol UIInputEnvironmentPrivate: UIInputEnvironment {
 
 extension UIInputEnvironmentPrivate {
     
-    public func setNeedsStateChanges() {
+    func _setNeedsStateChanges() {
         inputChangesSystem.setNeedsStateChanges()
     }
     
-    public func changesStateIfNeeded() {
+    func _changesStateIfNeeded() {
         inputChangesSystem.changesStateIfNeeded()
     }
     
-    public func setNeedsConfigurationChanges() {
+    func _setNeedsConfigurationChanges() {
         inputChangesSystem.setNeedsConfigurationChanges()
     }
     
-    public func changesConfigurationIfNeeded() {
+    func _changesConfigurationIfNeeded() {
         inputChangesSystem.changesConfigurationIfNeeded()
     }
     
-    public func withAnimatedChanges(_ changes: () -> Void) {
+    func _withAnimatedChanges(_ changes: () -> Void) {
         inputChangesSystem.withAnimatedChanges(changes)
     }
     
-    public func withoutAnimatedChanges(_ changes: () -> Void) {
+    func _withoutAnimatedChanges(_ changes: () -> Void) {
         inputChangesSystem.withoutAnimatedChanges(changes)
     }
 }
@@ -54,9 +54,9 @@ final class UIInputChangesSystem {
     
     private var currentPendingChangesIdentifiers: Set<UUID> = []
     
-    init(for environment: any UIInputEnvironmentPrivate) {
+    init(for environment: some UIInputEnvironmentPrivate) {
         self.environment = environment
-        environmentTypeInfo = UIInputEnvironmentTypeInfo(of: environment)
+        environmentTypeInfo = UIInputEnvironmentTypeInfo(of: type(of: environment))
         prepareForChanges()
     }
 }
@@ -187,7 +187,7 @@ extension UIInputChangesSystem {
         assert(currentPendingChangesIdentifiers.isEmpty)
         
         let context = UIInputChangesContext()
-        currentContext = context
+        currentContext = consume context
         
         let transaction = RunLoopPerformTransaction { [weak self] in
             guard let self else { return }
@@ -216,7 +216,7 @@ extension UIInputChangesSystem {
             Input objects changes transaction enqueued
             """
         )
-        currentTransaction = transaction
+        currentTransaction = consume transaction
     }
     
     private func performDeferredChanges() {

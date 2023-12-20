@@ -11,11 +11,11 @@ struct UIInputTypeInfo {
     
     let invalidatingProperties: [InvalidatingPropertyInfo]
     
-    init<T: UIInput>(of type: T.Type) {
+    init(of inputType: (some UIInput).Type) {
         var invalidatingProperties_: [InvalidatingPropertyInfo] = []
-        invalidatingProperties_.reserveCapacity(_getRecursiveChildCount(type))
+        invalidatingProperties_.reserveCapacity(_getRecursiveChildCount(inputType))
         
-        _forEachField(of: type, options: [.classType, .ignoreUnknown]) { name, offset, type in
+        _forEachField(of: inputType, options: [.classType, .ignoreUnknown]) { name, offset, type in
             guard let type = type as? any InvalidatingProperty.Type else { return true }
             invalidatingProperties_.append(InvalidatingPropertyInfo(name: String(cString: name), offset: offset, type: type))
             return true

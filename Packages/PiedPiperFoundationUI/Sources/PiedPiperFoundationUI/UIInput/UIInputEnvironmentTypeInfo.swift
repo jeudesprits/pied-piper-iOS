@@ -15,8 +15,8 @@ struct UIInputEnvironmentTypeInfo {
     
     let configurationObjectProperties: [ConfigurationObjectPropertyInfo]
     
-    init<T: UIInputEnvironment>(of environment: borrowing T) {
-        name = _typeName(T.self)
+    init(of environmentType: (some UIInputEnvironmentPrivate).Type) {
+        name = _typeName(environmentType)
         
         var stateObjectProperties_: [StateObjectPropertyInfo] = []
         stateObjectProperties_.reserveCapacity(3)
@@ -24,7 +24,7 @@ struct UIInputEnvironmentTypeInfo {
         var configurationObjectProperties_: [ConfigurationObjectPropertyInfo] = []
         configurationObjectProperties_.reserveCapacity(3)
         
-        _forEachField(of: T.self, options: [.classType, .ignoreUnknown]) { _, offset, type in
+        _forEachField(of: environmentType, options: [.classType, .ignoreUnknown]) { _, offset, type in
             if let type = type as? any StateObjectProperty.Type {
                 stateObjectProperties_.append(StateObjectPropertyInfo(offset: offset, typeName: _typeName(type), type: type))
             } else if let type = type as? any ConfigurationObjectProperty.Type {
