@@ -7,7 +7,7 @@
 
 import SwiftUtilities
 
-open class UIInput: Copyable {
+open class UIInput: Copyable, ObservableProperty {
     
     final let typeInfo: UIInputTypeInfo
     

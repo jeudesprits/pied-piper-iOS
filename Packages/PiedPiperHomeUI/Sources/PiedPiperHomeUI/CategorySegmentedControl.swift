@@ -55,8 +55,8 @@ final class CategorySegmentedControl: Control {
     override func updatingConstraints() {
         super.updatingConstraints()
         
-        guard let updatingConstraintsContext else { return }
-        defer { self.updatingConstraintsContext = nil }
+//        guard let updatingConstraintsContext else { return }
+//        defer { self.updatingConstraintsContext = nil }
         
         if flags.needsUpdatingConstraintsOnStateChange, !flags.needsUpdatingConstraintsOnConfigurationChange {
             flags.needsUpdatingConstraintsOnStateChange = false
@@ -592,8 +592,9 @@ extension CategorySegmentView {
             let image = configuration.iconImage.withRenderingMode(.alwaysTemplate)
             iconImageView.image = image
             selectedIconImageView.image = image
-            titleLabel.text = configuration.title
-            selectedTitleLabel.text = configuration.title
+            let title = configuration.title
+            titleLabel.text = title
+            selectedTitleLabel.text = title
         } else {
             iconImageView.image = nil
             selectedIconImageView.image = nil

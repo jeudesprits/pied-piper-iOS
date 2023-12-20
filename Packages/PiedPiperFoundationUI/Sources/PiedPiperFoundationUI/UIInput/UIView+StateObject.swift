@@ -16,15 +16,13 @@ extension UIView {
         @usableFromInline
         let id: UUID
         
-        @usableFromInline
-        typealias WillChangeHandler = () -> Void
-        
-        typealias ChangesHandler = (_ previousState: State?, _ context: UIInputChangesContext) -> Void
-        
         var previousValue: State?
         
         @usableFromInline
         var value: State
+        
+        @usableFromInline
+        typealias WillChangeHandler = () -> Void
         
         @usableFromInline
         var willChangeHandler: WillChangeHandler = { } {
@@ -32,6 +30,8 @@ extension UIView {
                 value.willChangeHandler = willChangeHandler
             }
         }
+        
+        typealias ChangesHandler = (_ previousState: State?, _ context: UIInputChangesContext) -> Void
         
         var registeredChangesHandlers: OrderedDictionary<UIInputChangesRegistration, ChangesHandler> = [:]
         

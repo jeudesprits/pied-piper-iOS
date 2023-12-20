@@ -5,7 +5,7 @@
 //  Created by Ruslan Lutfullin on 14/12/23.
 //
 
-protocol ConfigurationObjectProperty: InputObjectObservedProperty {
+protocol ConfigurationObjectProperty: InputObjectProperty {
     
     var previousValue: Input? { get set }
     
