@@ -8,12 +8,12 @@
 extension UIInput: CustomDebugStringConvertible {
     
     public final var debugDescription: String {
-        let self_ = Unmanaged.passUnretained(self).toOpaque()
+        let selfPointer = Unmanaged.passUnretained(self).toOpaque()
         
         var debugDescription = "\(String(describing: Self.self))("
         
         func visit(invalidatingPropertyOf type: (some InvalidatingProperty).Type, with propertyInfo: InvalidatingPropertyInfo) {
-            let property = self_.advanced(by: propertyInfo.offset).assumingMemoryBound(to: type)
+            let property = selfPointer.advanced(by: propertyInfo.offset).assumingMemoryBound(to: type)
             debugDescription += "\(property.pointee.value), "
         }
         
