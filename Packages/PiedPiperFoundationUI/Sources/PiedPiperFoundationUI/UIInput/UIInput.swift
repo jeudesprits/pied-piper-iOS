@@ -12,7 +12,10 @@ open class UIInput: Copyable {
     final let typeInfo: UIInputTypeInfo
     
     @usableFromInline
-    final var willChangeHandler: () -> Void = { }
+    typealias WillChangeHandler = () -> Void
+    
+    @usableFromInline
+    final var willChangeHandler: WillChangeHandler = { }
     
     init() {
         typeInfo = UIInputTypeInfo(of: Self.self)
