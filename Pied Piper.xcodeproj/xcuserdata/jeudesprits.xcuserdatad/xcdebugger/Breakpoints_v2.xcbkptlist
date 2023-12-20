@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "97C5CC7C-062D-478A-9538-58B57DBD6E1C"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         <BreakpointContent
+            uuid = "B7ECEED3-17BA-40A6-9CD5-3B34064AD59C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "Yes"
+            symbolName = "[UIApplication sendEvent:]"
+            moduleName = "">
+            <Actions>
+               <BreakpointActionProxy
+                  ActionExtensionID = "Xcode.BreakpointAction.DebuggerCommand">
+                  <ActionContent
+                     consoleCommand = "po $arg3">
+                  </ActionContent>
+               </BreakpointActionProxy>
+            </Actions>
+            <Locations>
+               <Location
+                  uuid = "B7ECEED3-17BA-40A6-9CD5-3B34064AD59C - ff3be2a9ce03678"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[RBSymbolLayer setAnimator:]"
+                  moduleName = "RenderBox"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "B7ECEED3-17BA-40A6-9CD5-3B34064AD59C - a2d624341cea3c41"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[RBSymbolLayer runAnimationAtTime:]"
+                  moduleName = "RenderBox"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "B7ECEED3-17BA-40A6-9CD5-3B34064AD59C - b7bbed263aa49ba0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[RBSymbolLayer actionForKey:]"
+                  moduleName = "RenderBox"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "B7ECEED3-17BA-40A6-9CD5-3B34064AD59C - bcd2fccb981b59ab"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[RBSymbolLayer actionForLayer:forKey:]"
+                  moduleName = "RenderBox"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "B7ECEED3-17BA-40A6-9CD5-3B34064AD59C - b82565e9bfcbead2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[UITabBarController setTabBar:]"
+                  moduleName = "UIKitCore"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "B7ECEED3-17BA-40A6-9CD5-3B34064AD59C - ff72a730dcc2ad06"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[UITabBar initWithFrame:]"
+                  moduleName = "UIKitCore"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  uuid = "B7ECEED3-17BA-40A6-9CD5-3B34064AD59C - c4627c2709602540"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[UIApplication sendEvent:]"
+                  moduleName = "UIKitCore"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         <BreakpointContent
+            uuid = "489051C7-6CAC-4D87-8401-84715B84CA8C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            symbolName = "[CALayer setBounds:]"
+            moduleName = "">
+            <Actions>
+               <BreakpointActionProxy
+                  ActionExtensionID = "Xcode.BreakpointAction.Log">
+                  <ActionContent
+                     message = "&quot;...&quot;"
+                     conveyanceType = "0">
+                  </ActionContent>
+               </BreakpointActionProxy>
+            </Actions>
+            <Locations>
+               <Location
+                  uuid = "489051C7-6CAC-4D87-8401-84715B84CA8C - a2c0f296e642bb96"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[CALayer setBounds:]"
+                  moduleName = "QuartzCore"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         <BreakpointContent
+            uuid = "52A6B964-9F8F-4289-A82D-D322963A674B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            symbolName = "[UIView _backing_frame]"
+            moduleName = "">
+            <Locations>
+               <Location
+                  uuid = "52A6B964-9F8F-4289-A82D-D322963A674B - d07087ee352d75b6"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[UIView _backing_frame]"
+                  moduleName = "UIKitCore"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BBB24733-137C-4EEE-B2A9-A981369A4839"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Packages/PiedPiperHomeUI/Sources/PiedPiperHomeUI/CategorySegmentedControl.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "111"
+            endingLineNumber = "111"
+            landmarkName = "updatingConstraints()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "BBB24733-137C-4EEE-B2A9-A981369A4839 - 255985b1f69f0192"
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "PiedPiperHomeUI.CategorySegmentedControl.updatingConstraints() -&gt; ()"
+                  moduleName = "Pied Piper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeudesprits/Developer/pied-piper-iOS/Packages/PiedPiperHomeUI/Sources/PiedPiperHomeUI/CategorySegmentedControl.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "111"
+                  endingLineNumber = "111"
+                  offsetFromSymbolStart = "4176">
+               </Location>
+               <Location
+                  uuid = "BBB24733-137C-4EEE-B2A9-A981369A4839 - 60f7be3a882e4134"
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #4 () -&gt; () in PiedPiperHomeUI.CategorySegmentedControl.updatingConstraints() -&gt; ()"
+                  moduleName = "Pied Piper"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jeudesprits/Developer/pied-piper-iOS/Packages/PiedPiperHomeUI/Sources/PiedPiperHomeUI/CategorySegmentedControl.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "112"
+                  endingLineNumber = "112"
+                  offsetFromSymbolStart = "48">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

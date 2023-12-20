@@ -1,0 +1,414 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		558154DE2B0D579D00700ABF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 558154DD2B0D579D00700ABF /* Assets.xcassets */; };
+		558154E92B0D901E00700ABF /* EntryPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558154E82B0D901E00700ABF /* EntryPoint.swift */; };
+		558155012B10494700700ABF /* PiedPiperApplication in Frameworks */ = {isa = PBXBuildFile; productRef = 558155002B10494700700ABF /* PiedPiperApplication */; };
+		558155042B10495B00700ABF /* PiedPiperApplicationDelegate in Frameworks */ = {isa = PBXBuildFile; productRef = 558155032B10495B00700ABF /* PiedPiperApplicationDelegate */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		550B3D172B11A577002C3FB8 /* PiedPiperSearchUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperSearchUI; path = Packages/PiedPiperSearchUI; sourceTree = "<group>"; };
+		550B3D182B11BA78002C3FB8 /* PiedPiperBrowseUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperBrowseUI; path = Packages/PiedPiperBrowseUI; sourceTree = "<group>"; };
+		550B3D192B11BAAB002C3FB8 /* PiedPiperProfileUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperProfileUI; path = Packages/PiedPiperProfileUI; sourceTree = "<group>"; };
+		5517B9092B16C6830093E17E /* Lexbor */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Lexbor; path = Packages/Lexbor; sourceTree = "<group>"; };
+		558154D12B0D579C00700ABF /* Pied Piper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Pied Piper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		558154DD2B0D579D00700ABF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		558154E82B0D901E00700ABF /* EntryPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryPoint.swift; sourceTree = "<group>"; };
+		558154F32B103D8600700ABF /* PiedPiperHomeUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperHomeUI; path = Packages/PiedPiperHomeUI; sourceTree = "<group>"; };
+		558154F42B103E6700700ABF /* PiedPiperFoundationUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperFoundationUI; path = Packages/PiedPiperFoundationUI; sourceTree = "<group>"; };
+		558154F52B103ED400700ABF /* PiedPiperSharedUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperSharedUI; path = Packages/PiedPiperSharedUI; sourceTree = "<group>"; };
+		558154F62B103F2800700ABF /* UIKitUtilities */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UIKitUtilities; path = Packages/UIKitUtilities; sourceTree = "<group>"; };
+		558154F72B103F2B00700ABF /* Tor */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Tor; path = Packages/Tor; sourceTree = "<group>"; };
+		558154F82B103F2F00700ABF /* TimingFunctions */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = TimingFunctions; path = Packages/TimingFunctions; sourceTree = "<group>"; };
+		558154F92B103F3300700ABF /* simdUtilities */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = simdUtilities; path = Packages/simdUtilities; sourceTree = "<group>"; };
+		558154FA2B103F3800700ABF /* osUtilities */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = osUtilities; path = Packages/osUtilities; sourceTree = "<group>"; };
+		558154FB2B103F3F00700ABF /* FoundationUtilities */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FoundationUtilities; path = Packages/FoundationUtilities; sourceTree = "<group>"; };
+		558154FC2B103FFA00700ABF /* SwiftUtilities */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SwiftUtilities; path = Packages/SwiftUtilities; sourceTree = "<group>"; };
+		558154FD2B1046E800700ABF /* PiedPiperApplication */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperApplication; path = Packages/PiedPiperApplication; sourceTree = "<group>"; };
+		558154FE2B1046E800700ABF /* PiedPiperApplicationDelegate */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperApplicationDelegate; path = Packages/PiedPiperApplicationDelegate; sourceTree = "<group>"; };
+		558155052B1050A500700ABF /* PiedPiperCoreUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperCoreUI; path = Packages/PiedPiperCoreUI; sourceTree = "<group>"; };
+		558155062B10671800700ABF /* PiedPiperMainUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperMainUI; path = Packages/PiedPiperMainUI; sourceTree = "<group>"; };
+		558155072B113C8900700ABF /* PiedPiperApplicationUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperApplicationUI; path = Packages/PiedPiperApplicationUI; sourceTree = "<group>"; };
+		558155082B118ADA00700ABF /* PiedPiperLibraryUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperLibraryUI; path = Packages/PiedPiperLibraryUI; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		558154CE2B0D579C00700ABF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				558155012B10494700700ABF /* PiedPiperApplication in Frameworks */,
+				558155042B10495B00700ABF /* PiedPiperApplicationDelegate in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		558154C82B0D579C00700ABF = {
+			isa = PBXGroup;
+			children = (
+				558154D32B0D579C00700ABF /* Pied Piper */,
+				558154FC2B103FFA00700ABF /* SwiftUtilities */,
+				558154FB2B103F3F00700ABF /* FoundationUtilities */,
+				558154FA2B103F3800700ABF /* osUtilities */,
+				558154F92B103F3300700ABF /* simdUtilities */,
+				558154F82B103F2F00700ABF /* TimingFunctions */,
+				558154F72B103F2B00700ABF /* Tor */,
+				5517B9092B16C6830093E17E /* Lexbor */,
+				558154F62B103F2800700ABF /* UIKitUtilities */,
+				558154FD2B1046E800700ABF /* PiedPiperApplication */,
+				558154FE2B1046E800700ABF /* PiedPiperApplicationDelegate */,
+				558155072B113C8900700ABF /* PiedPiperApplicationUI */,
+				558155062B10671800700ABF /* PiedPiperMainUI */,
+				558155052B1050A500700ABF /* PiedPiperCoreUI */,
+				558154F42B103E6700700ABF /* PiedPiperFoundationUI */,
+				558154F52B103ED400700ABF /* PiedPiperSharedUI */,
+				558154F32B103D8600700ABF /* PiedPiperHomeUI */,
+				550B3D182B11BA78002C3FB8 /* PiedPiperBrowseUI */,
+				558155082B118ADA00700ABF /* PiedPiperLibraryUI */,
+				550B3D172B11A577002C3FB8 /* PiedPiperSearchUI */,
+				550B3D192B11BAAB002C3FB8 /* PiedPiperProfileUI */,
+				558154D22B0D579C00700ABF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		558154D22B0D579C00700ABF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				558154D12B0D579C00700ABF /* Pied Piper.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		558154D32B0D579C00700ABF /* Pied Piper */ = {
+			isa = PBXGroup;
+			children = (
+				558154E82B0D901E00700ABF /* EntryPoint.swift */,
+				558154DD2B0D579D00700ABF /* Assets.xcassets */,
+			);
+			path = "Pied Piper";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		558154D02B0D579C00700ABF /* Pied Piper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 558154E52B0D579D00700ABF /* Build configuration list for PBXNativeTarget "Pied Piper" */;
+			buildPhases = (
+				558154CD2B0D579C00700ABF /* Sources */,
+				558154CE2B0D579C00700ABF /* Frameworks */,
+				558154CF2B0D579C00700ABF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Pied Piper";
+			packageProductDependencies = (
+				558155002B10494700700ABF /* PiedPiperApplication */,
+				558155032B10495B00700ABF /* PiedPiperApplicationDelegate */,
+			);
+			productName = "Pied Piper";
+			productReference = 558154D12B0D579C00700ABF /* Pied Piper.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		558154C92B0D579C00700ABF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1510;
+				LastUpgradeCheck = 1510;
+				TargetAttributes = {
+					558154D02B0D579C00700ABF = {
+						CreatedOnToolsVersion = 15.1;
+					};
+				};
+			};
+			buildConfigurationList = 558154CC2B0D579C00700ABF /* Build configuration list for PBXProject "Pied Piper" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 558154C82B0D579C00700ABF;
+			packageReferences = (
+				558154FF2B10494700700ABF /* XCLocalSwiftPackageReference "Packages/PiedPiperApplication" */,
+				558155022B10495B00700ABF /* XCLocalSwiftPackageReference "Packages/PiedPiperApplicationDelegate" */,
+			);
+			productRefGroup = 558154D22B0D579C00700ABF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				558154D02B0D579C00700ABF /* Pied Piper */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		558154CF2B0D579C00700ABF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				558154DE2B0D579D00700ABF /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		558154CD2B0D579C00700ABF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				558154E92B0D901E00700ABF /* EntryPoint.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		558154E32B0D579D00700ABF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		558154E42B0D579D00700ABF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		558154E62B0D579D00700ABF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7PRP676D29;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Pied Piper/Info.plist";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIStatusBarHidden = NO;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jeudesprits.Pied-Piper";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		558154E72B0D579D00700ABF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7PRP676D29;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Pied Piper/Info.plist";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIStatusBarHidden = NO;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.jeudesprits.Pied-Piper";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		558154CC2B0D579C00700ABF /* Build configuration list for PBXProject "Pied Piper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				558154E32B0D579D00700ABF /* Debug */,
+				558154E42B0D579D00700ABF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		558154E52B0D579D00700ABF /* Build configuration list for PBXNativeTarget "Pied Piper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				558154E62B0D579D00700ABF /* Debug */,
+				558154E72B0D579D00700ABF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		558154FF2B10494700700ABF /* XCLocalSwiftPackageReference "Packages/PiedPiperApplication" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/PiedPiperApplication;
+		};
+		558155022B10495B00700ABF /* XCLocalSwiftPackageReference "Packages/PiedPiperApplicationDelegate" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/PiedPiperApplicationDelegate;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		558155002B10494700700ABF /* PiedPiperApplication */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PiedPiperApplication;
+		};
+		558155032B10495B00700ABF /* PiedPiperApplicationDelegate */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PiedPiperApplicationDelegate;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 558154C92B0D579C00700ABF /* Project object */;
+}
