@@ -4,7 +4,7 @@
 @_implementationOnly
 import Darwin
 @_implementationOnly
-import CLexbor // 73673
+import CLexbor
 
 public func test() {
     let html = "<div>Works fine!</div>"
