@@ -1,3 +1,3 @@
 [submodule "Packages/Lexbor/Sources/CLexbor/lexbor"]
 	path = Packages/Lexbor/Sources/CLexbor/lexbor
-	url = https://github.com/jeudesprits/lexbor.git
+	url = git@github-as-jeudesprits:jeudesprits/lexbor.git
