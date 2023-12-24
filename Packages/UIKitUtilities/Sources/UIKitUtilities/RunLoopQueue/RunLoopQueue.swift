@@ -47,16 +47,14 @@ extension RunLoopQueue {
 extension RunLoopQueue {
     
     func enqueue(_ transaction: RunLoopPerformTransaction) {
-        let (inserted, index) = performTransactions.append(transaction)
+        let (inserted, _) = performTransactions.append(transaction)
         guard inserted else { return }
         CFRunLoopPerformBlock(CFRunLoopGetMain(), transaction.mode.rawValue) { [unowned(unsafe) self] in
-            guard !performTransactions.isEmpty else { return }
-            var transaction = performTransactions[index]
-            if !transaction.flags.isCommitted {
-                transaction.actionHandler()
-                transaction.flags.isCommitted = true
+            withMutation(of: transaction) {
+                guard !$0.flags.isCommitted else { return }
+                $0.flags.isCommitted = true
+                $0.actionHandler()
             }
-            performTransactions.update(transaction, at: index)
         }
         if performTransactions.count == 1 {
             CFRunLoopSourceSignal(wakeUpSource)
@@ -65,14 +63,15 @@ extension RunLoopQueue {
     }
     
     func enqueue(_ transaction: RunLoopTimerTransaction) {
-        let (inserted, index) = timerTransactions.append(transaction)
+        let (inserted, _) = timerTransactions.append(transaction)
         guard inserted else { return }
         let timer = CFRunLoopTimerCreateWithHandler(kCFAllocatorDefault, CFAbsoluteTimeGetCurrent() + transaction.delay, 0.0, 0, 0) { [unowned(unsafe) self] _ in
-            let transaction = timerTransactions[index]
-            if !transaction.flags.isCommitted {
-                transaction.actionHandler()
+            withMutation(of: transaction) {
+                guard !$0.flags.isCommitted else { return }
+                $0.flags.isCommitted = true
+                $0.actionHandler()
             }
-            timerTransactions.remove(at: index)
+            timerTransactions.remove(transaction)
         }
         precondition(CFRunLoopTimerIsValid(timer))
         CFRunLoopAddTimer(CFRunLoopGetMain(), timer, transaction.mode)
@@ -82,10 +81,12 @@ extension RunLoopQueue {
 extension RunLoopQueue {
     
     func flushPerformTransactions() {
-        for transaction in performTransactions {
-            if !transaction.flags.isCommitted {
-                transaction.actionHandler()
-            }
+        for index in performTransactions.indices {
+            var transaction = performTransactions[index]
+            guard !transaction.flags.isCommitted else { continue }
+            transaction.flags.isCommitted = true
+            transaction.actionHandler()
+            performTransactions.update(transaction, at: index)
         }
         performTransactions.removeAll(keepingCapacity: true)
     }

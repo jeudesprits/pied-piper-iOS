@@ -22,4 +22,8 @@ public protocol UIInputEnvironment: AnyObject {
     func setNeedsAnimatedInputChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>)
     
     func changesInputsIfNeeded()
+    
+    func contextForInputChanges<State: UIState>(of input: UIView.StateObject<State>) -> UIInputChangesContext?
+    
+    func contextForInputChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>) -> UIInputChangesContext?
 }

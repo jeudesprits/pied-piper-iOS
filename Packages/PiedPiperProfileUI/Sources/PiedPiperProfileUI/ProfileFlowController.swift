@@ -13,7 +13,7 @@ public final class ProfileFlowController: NavigationController {
     
     public init() {
         super.init(rootViewController: ProfileViewController())
-        let tabBarImage = UIImage(systemName: "person.and.background.striped.horizontal")!
+        let tabBarImage = UIImage(systemName: "person.crop.rectangle.fill")!
         tabBarItem = UITabBarItem(title: "Профиль", image: tabBarImage, selectedImage: tabBarImage)
     }
 }

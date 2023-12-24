@@ -64,23 +64,21 @@ final class CategorySegmentedControl: Control {
             
             guard let configuration else { return }
             
-            for (index, item) in configuration.items.indexed() { // <-- Анимировано?
-                let segmentView = CategorySegmentView(frame: .zero)
+            segmentsView.reserveCapacity(configuration.items.count)
+            for (index, item) in configuration.items.indexed() {
+                let segmentView = CategorySegmentView(frame: .zero, configuration: CategorySegmentView.Configuration(iconImage: item.iconImage, title: item.title))
                 segmentView.translatesAutoresizingMaskIntoConstraints = false
                 segmentView.state.isSelected = index == state.selectedIndex
-                segmentView.configuration = CategorySegmentView.Configuration(iconImage: item.iconImage, title: item.title)
                 scrollView.addSubview(segmentView)
                 segmentsView.append(segmentView)
             }
             
             var segmentsConstraints: [NSLayoutConstraint] = []
+            segmentsConstraints.reserveCapacity(segmentsView.count * 3)
+            segmentsBottomConstraint.reserveCapacity(segmentsView.count)
             let firstSegmentView = segmentsView.first
             let lastSegmentView = segmentsView.last
-            let selectedSegmentView: CategorySegmentView? = if let selectedIndex = state.selectedIndex {
-                segmentsView[selectedIndex]
-            } else {
-                nil
-            }
+            let selectedSegmentView: CategorySegmentView? = if let selectedIndex = state.selectedIndex { segmentsView[selectedIndex] } else { nil }
             for (previousSegmentView, segmentView) in segmentsView.adjacentPairs() {
                 if previousSegmentView === firstSegmentView {
                     let bottomConstraint = if previousSegmentView === selectedSegmentView || selectedSegmentView == nil {
@@ -115,20 +113,24 @@ final class CategorySegmentedControl: Control {
                 }
             }
             NSLayoutConstraint.activate(segmentsConstraints)
+            
+            guard let context = contextForInputChanges(of: $state) else { return }
+            for segmentView in segmentsView {
+                if context.isAnimated {
+                    segmentView.setNeedsAnimatedInputsChanges()
+                    segmentView.changesInputsIfNeeded()
+                } else if !context.isDeferred {
+                    segmentView.changesInputsIfNeeded()
+                }
+            }
         } else if flags.isPartOfApplyState {
             defer { flags.isPartOfApplyState = false }
             
-            for (index, segmentView) in segmentsView.indexed() { // <-- Анимировано?
-                //segmentView.withAnimatedChanges {
-                    segmentView.state.isSelected = index == state.selectedIndex
-                //}
+            for (index, segmentView) in segmentsView.indexed() {
+                segmentView.state.isSelected = index == state.selectedIndex
             }
             
-            let selectedSegmentView: CategorySegmentView? = if let selectedIndex = state.selectedIndex {
-                segmentsView[selectedIndex]
-            } else {
-                nil
-            }
+            let selectedSegmentView: CategorySegmentView? = if let selectedIndex = state.selectedIndex { segmentsView[selectedIndex] } else { nil }
             NSLayoutConstraint.deactivate(segmentsBottomConstraint)
             segmentsBottomConstraint.removeAll(keepingCapacity: true)
             for segmentView in segmentsView {
@@ -144,6 +146,16 @@ final class CategorySegmentedControl: Control {
                 segmentsBottomConstraint += CollectionOfOne(bottomConstraint)
             }
             NSLayoutConstraint.activate(segmentsBottomConstraint)
+            
+            guard let context = contextForInputChanges(of: $state) else { return }
+            for segmentView in segmentsView {
+                if context.isAnimated {
+                    segmentView.setNeedsAnimatedInputsChanges()
+                    segmentView.changesInputsIfNeeded()
+                } else if !context.isDeferred {
+                    segmentView.changesInputsIfNeeded()
+                }
+            }
         }
     }
     
@@ -188,13 +200,15 @@ extension CategorySegmentedControl {
                 setNeedsLayout()
                 layoutIfNeeded()
             }
+        } else if !context.isDeferred {
+            flags.isPartOfApplyState = true
+            setNeedsUpdateConstraints()
+            setNeedsLayout()
+            layoutIfNeeded()
         } else {
             flags.isPartOfApplyState = true
             setNeedsUpdateConstraints()
             setNeedsLayout()
-            if !context.isDeferred {
-                layoutIfNeeded()
-            }
         }
     }
 }
@@ -205,7 +219,7 @@ extension CategorySegmentedControl {
         flags.isPartOfApplyConfiguration = true
         setNeedsUpdateConstraints()
         setNeedsLayout()
-        if !context.isDeferred {
+        if context.isAnimated || !context.isDeferred {
             layoutIfNeeded()
         }
     }
@@ -225,8 +239,7 @@ extension CategorySegmentedControl {
     
     final class State: UIState {
         
-        @Invalidating
-        var selectedIndex: Int?
+        @Invalidating var selectedIndex: Int?
         
         override init() {
             super.init()
@@ -247,8 +260,7 @@ extension CategorySegmentedControl {
     
     final class Configuration: UIConfiguration {
         
-        @Invalidating
-        var items: [Item]
+        @Invalidating var items: [Item]
         
         init(items: [Item]) {
             _items = .init(wrappedValue: items)
@@ -457,7 +469,7 @@ extension CategorySegmentView {
                 bringSubviewToFront(titleLabel)
             }
             
-            UIViewPropertyAnimator.runningPropertyAnimator(animation: .spring(dampingRatio: 1.0, frequencyResponse: 0.35)) { [self] in
+            UIViewPropertyAnimator.runningPropertyAnimator(animation: .default1Spring) { [self] in
                 flags.isPartOfSelectChange = true
                 setNeedsUpdateConstraints()
                 setNeedsLayout()
@@ -527,6 +539,8 @@ extension CategorySegmentView {
                 selectedTitleLabel.isHidden = true
             }
         }
+        
+        
     }
     
     private func highlightedDidChange(_ previousHighlighted: Bool?, with context: UIInputChangesContext) {
@@ -571,8 +585,7 @@ extension CategorySegmentView {
         
         flags.isPartOfApplyConfiguration = true
         setNeedsLayout()
-        
-        if !context.isDeferred {
+        if !context.isDeferred || context.isAnimated {
             layoutIfNeeded()
         }
     }

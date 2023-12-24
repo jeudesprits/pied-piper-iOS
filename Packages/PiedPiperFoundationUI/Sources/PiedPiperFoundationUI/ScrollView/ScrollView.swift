@@ -17,11 +17,11 @@ open class ScrollView: UIScrollView, ViewProtocol, ViewProtocolPrivate, UIInputE
         _setNeedsInputsChanges()
     }
     
-    public final func setNeedsInputChanges<State: UIState>(of input: UIView.StateObject<State>) {
+    public final func setNeedsInputChanges<State: UIState>(of input: StateObject<State>) {
         _setNeedsInputChanges(of: input)
     }
     
-    public final func setNeedsInputChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>) {
+    public final func setNeedsInputChanges<Configuration: UIConfiguration>(of input: ConfigurationObject<Configuration>) {
         _setNeedsInputChanges(of: input)
     }
     
@@ -29,16 +29,24 @@ open class ScrollView: UIScrollView, ViewProtocol, ViewProtocolPrivate, UIInputE
         _setNeedsAnimatedInputsChanges()
     }
     
-    public final func setNeedsAnimatedInputChanges<State: UIState>(of input: UIView.StateObject<State>) {
+    public final func setNeedsAnimatedInputChanges<State: UIState>(of input: StateObject<State>) {
         _setNeedsAnimatedInputChanges(of: input)
     }
     
-    public final func setNeedsAnimatedInputChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>) {
+    public final func setNeedsAnimatedInputChanges<Configuration: UIConfiguration>(of input: ConfigurationObject<Configuration>) {
         _setNeedsAnimatedInputChanges(of: input)
     }
     
     public final func changesInputsIfNeeded() {
         _changesInputsIfNeeded()
+    }
+    
+    public final func contextForInputChanges<State: UIState>(of input: StateObject<State>) -> UIInputChangesContext? {
+        _contextForInputChanges(of: input)
+    }
+    
+    public final func contextForInputChanges<Configuration: UIConfiguration>(of input: ConfigurationObject<Configuration>) -> UIInputChangesContext? {
+        _contextForInputChanges(of: input)
     }
     
     // MARK: -

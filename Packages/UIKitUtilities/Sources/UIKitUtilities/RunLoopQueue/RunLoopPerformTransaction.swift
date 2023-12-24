@@ -28,11 +28,12 @@ public struct RunLoopPerformTransaction: RunLoopTransaction {
 extension RunLoopPerformTransaction {
     
     public func commit() {
-        guard !isCommitted else { return }
-        actionHandler()
-        RunLoopQueue.main.withMutation(of: self) {
+        guard !(RunLoopQueue.main.withMutation(of: self, {
+            let wasComitted = $0.flags.isCommitted
             $0.flags.isCommitted = true
-        }
+            return wasComitted
+        }) ?? true) else { return }
+        actionHandler()
     }
 }
 
@@ -41,13 +42,13 @@ extension RunLoopPerformTransaction {
     public var isCommitted: Bool {
         RunLoopQueue.main.withMutation(of: self) {
             $0.flags.isCommitted
-        } ?? false
+        } ?? true
     }
     
     public var isCancelled: Bool {
         RunLoopQueue.main.withMutation(of: self) {
             $0.flags.isCancelled
-        } ?? false
+        } ?? true
     }
 }
 

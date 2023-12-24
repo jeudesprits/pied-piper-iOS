@@ -51,6 +51,16 @@ extension UIInputEnvironmentPrivate {
     func _changesInputsIfNeeded() {
         inputChangesSystem.changesIfNeeded()
     }
+    
+    @inlinable
+    func _contextForInputChanges<State: UIState>(of input: UIView.StateObject<State>) -> UIInputChangesContext? {
+        inputChangesSystem.contextForChanges(of: input)
+    }
+    
+    @inlinable
+    func _contextForInputChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>) -> UIInputChangesContext? {
+        inputChangesSystem.contextForChanges(of: input)
+    }
 }
 
 final class UIInputChangesSystem {
@@ -91,23 +101,28 @@ extension UIInputChangesSystem {
     }
     
     func setNeedsAnimatedChanges() {
-        startDeferringChangesIfNeeded()
         currentContext?.needsAnimatedChanges = true
     }
     
     func setNeedsAnimatedChanges<State: UIState>(of input: UIView.StateObject<State>) {
-        startDeferringChangesIfNeeded()
         currentContext?.needsAnimatedChangesIdentifiers.insert(input.id)
     }
     
     func setNeedsAnimatedChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>) {
-        startDeferringChangesIfNeeded()
         currentContext?.needsAnimatedChangesIdentifiers.insert(input.id)
     }
     
     func changesIfNeeded() {
         currentContext?.needsDeferredChanges = false
         currentTransaction?.commit()
+    }
+    
+    func contextForChanges<State: UIState>(of input: UIView.StateObject<State>) -> UIInputChangesContext? {
+        currentContext?.pendingChangesContexts[input.id]
+    }
+    
+    func contextForChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>) -> UIInputChangesContext? {
+        currentContext?.pendingChangesContexts[input.id]
     }
 }
 
@@ -203,6 +218,9 @@ extension UIInputChangesSystem {
         assert(currentContext == nil)
         
         currentContext = Context()
+        let maximumCapacity = environmentTypeInfo.stateObjectProperties.count + environmentTypeInfo.configurationObjectProperties.count
+        currentContext.pendingChangesIdentifiers.reserveCapacity(maximumCapacity)
+        currentContext.pendingChangesContexts.reserveCapacity(maximumCapacity)
         
         currentTransaction = RunLoopPerformTransaction { [weak self] in
             guard let self else { return }
@@ -272,6 +290,7 @@ extension UIInputChangesSystem {
             var context = UIInputChangesContext()
             context.isDeferred = currentContext.needsDeferredChanges
             context.isAnimated = currentContext.needsAnimatedChanges || currentContext.needsAnimatedChangesIdentifiers.contains(propertyIdentifier)
+            currentContext.pendingChangesContexts[propertyIdentifier] = context
             
             for changesHandler in propertyPointer.pointee.registeredChangesHandlers.values {
                 changesHandler(propertyPointer.pointee.previousValue, context)
@@ -305,6 +324,7 @@ extension UIInputChangesSystem {
             var context = UIInputChangesContext()
             context.isDeferred = currentContext.needsDeferredChanges
             context.isAnimated = currentContext.needsAnimatedChanges || currentContext.needsAnimatedChangesIdentifiers.contains(propertyIdentifier)
+            currentContext.pendingChangesContexts[propertyIdentifier] = context
             
             for changesHandler in propertyPointer.pointee.registeredChangesHandlers.values {
                 changesHandler(propertyPointer.pointee.previousValue, context)
@@ -330,6 +350,8 @@ extension UIInputChangesSystem {
         var needsDeferredChanges = true
         
         var pendingChangesIdentifiers: Set<UUID> = []
+        
+        var pendingChangesContexts: [UUID: UIInputChangesContext] = [:]
         
         var needsChanges = false
         
