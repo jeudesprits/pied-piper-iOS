@@ -15,7 +15,7 @@ open class UIInput: Copyable, ObservableProperty {
     typealias WillChangeHandler = () -> Void
     
     @usableFromInline
-    final var willChangeHandler: WillChangeHandler = { }
+    final var willChangeHandler: WillChangeHandler = {}
     
     init() {
         typeInfo = UIInputTypeInfo(of: Self.self)

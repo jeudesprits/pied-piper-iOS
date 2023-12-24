@@ -5,17 +5,21 @@
 //  Created by Ruslan Lutfullin on 08/08/23.
 //
 
+import UIKit
+
 public protocol UIInputEnvironment: AnyObject {
     
-    func setNeedsStateChanges()
+    func setNeedsInputsChanges()
     
-    func changesStateIfNeeded()
+    func setNeedsInputChanges<State: UIState>(of input: UIView.StateObject<State>)
     
-    func setNeedsConfigurationChanges()
+    func setNeedsInputChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>)
     
-    func changesConfigurationIfNeeded()
+    func setNeedsAnimatedInputsChanges()
     
-    func withAnimatedChanges(_ changes: () -> Void)
+    func setNeedsAnimatedInputChanges<State: UIState>(of input: UIView.StateObject<State>)
     
-    func withoutAnimatedChanges(_ changes: () -> Void)
+    func setNeedsAnimatedInputChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>)
+    
+    func changesInputsIfNeeded()
 }

@@ -25,25 +25,36 @@ final class HomeViewController: ViewController {
         navigationItem.title = "Смотреть"
     }
     
+    @objc private func test1() {
+        print(#function)
+    }
+    
+    @objc private func test2() {
+        print(#function)
+    }
+    
     override var prefersStatusBarHidden: Bool { true }
 }
 
 final class HomeView: View {
     
-//    private var categorySegmentedControl: CategorySegmentedControl = with(CategorySegmentedControl(frame: .zero, configuration: CategorySegmentedControl.Configuration(items: [
-//        .init(title: "Фильмы"),
-//        .init(title: "Сериалы"),
-//        .init(title: "Мультфильмы"),
-//        .init(title: "Аниме"),
-//        .init(title: "Телеперадачи и Шоу"),
-//    ]))) {
+//    private var categorySegmentedControl: CategorySegmentedControl = with(CategorySegmentedControl(
+//        frame: .zero,
+//        configuration: CategorySegmentedControl.Configuration(items: [
+//            .init(iconImage: UIImage(resource: .icons8BabyYoda), title: "Фильмы"),
+//            .init(iconImage: UIImage(resource: .icons8BabyYoda), title: "Сериалы"),
+//            .init(iconImage: UIImage(resource: .icons8BabyYoda), title: "Мультфильмы"),
+//            .init(iconImage: UIImage(resource: .icons8BabyYoda), title: "Аниме"),
+//            .init(iconImage: UIImage(resource: .icons8BabyYoda), title: "Телеперадачи и Шоу"),
+//        ])
+//    )) {
 //        $0.translatesAutoresizingMaskIntoConstraints = false
 //    }
     
     private var categorySegmentView: CategorySegmentView = with(CategorySegmentView(
         frame: .zero,
-        configuration: CategorySegmentView.Configuration(iconImage: UIImage(resource: .icons8BabyYoda), title: "Сериалы"))
-    ) {
+        configuration: CategorySegmentView.Configuration(iconImage: UIImage(resource: .icons8BabyYoda), title: "Сериалы")
+    )) {
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -51,18 +62,19 @@ final class HomeView: View {
         super.setupCommon()
         backgroundColor = .systemBackground
         
-    
 //        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) { [self] in
-//            categorySegmentView.withAnimatedChanges {
-//                categorySegmentView.state.isSelected = true
-//            }
+//           // categorySegmentedControl.withAnimatedChanges {
+//                categorySegmentedControl.state.selectedIndex = 0
+//          //  }
 //        }
 //        
 //        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(8)) { [self] in
-//            categorySegmentView.withAnimatedChanges {
-//                categorySegmentView.state.isSelected = false
-//            }
+//          //  categorySegmentedControl.withAnimatedChanges {
+//                categorySegmentedControl.state.selectedIndex = 1
+//           // }
 //        }
+        
+        
     }
     
     override func setupConstraints() {

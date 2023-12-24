@@ -15,9 +15,8 @@ final class CategorySegmentedControl: Control {
     
     private var flags = Flags()
     
-    private var updatingConstraintsContext: UpdatingConstraintsContext!
-    
-    @_nonoverride @StateObject var state: State
+    @_nonoverride 
+    @StateObject var state: State
     
     @ConfigurationObject var configuration: Configuration?
     
@@ -55,63 +54,21 @@ final class CategorySegmentedControl: Control {
     override func updatingConstraints() {
         super.updatingConstraints()
         
-//        guard let updatingConstraintsContext else { return }
-//        defer { self.updatingConstraintsContext = nil }
-        
-        if flags.needsUpdatingConstraintsOnStateChange, !flags.needsUpdatingConstraintsOnConfigurationChange {
-            flags.needsUpdatingConstraintsOnStateChange = false
-            
-            guard let selectedIndex = state.selectedIndex else { return }
-            let selectedSegmentView = segmentsView[selectedIndex]
-            
-            for segmentView in segmentsView {
-                segmentView.withAnimatedChanges {
-                    segmentView.state.isSelected = segmentView === selectedSegmentView
-                }
-            }
-            
-            NSLayoutConstraint.deactivate(segmentsBottomConstraint)
-            segmentsBottomConstraint.removeAll(keepingCapacity: true)
-            for segmentView in segmentsView {
-                let bottomConstraint = if segmentView === selectedSegmentView {
-                    scrollView.contentLayoutGuide.bottomAnchor.constraint(equalTo: segmentView.bottomAnchor)
-                } else {
-                    segmentView.centerYAnchor.constraint(equalTo: scrollView.contentLayoutGuide.centerYAnchor, constant: 3)
-                    //segmentView.firstBaselineAnchor.constraint(equalTo: selectedSegmentView.firstBaselineAnchor)
-                }
-                segmentsBottomConstraint += CollectionOfOne(bottomConstraint)
-            }
-            NSLayoutConstraint.activate(segmentsBottomConstraint)
-        }
-        
-        if flags.needsUpdatingConstraintsOnConfigurationChange {
-            flags.needsUpdatingConstraintsOnConfigurationChange = false
+        if flags.isPartOfApplyConfiguration {
+            defer { flags.isPartOfApplyConfiguration = false }
             
             segmentsView.forEach { $0.removeFromSuperview() }
-            segmentsView.removeAll(keepingCapacity: true)
-            segmentsBottomConstraint.removeAll(keepingCapacity: true)
+            segmentsView.removeAll()
+            segmentsBottomConstraint.removeAll()
             scrollView.contentSize = .zero
             
             guard let configuration else { return }
             
-            for (index, item) in configuration.items.indexed() {
+            for (index, item) in configuration.items.indexed() { // <-- Анимировано?
                 let segmentView = CategorySegmentView(frame: .zero)
-                
-                let state = CategorySegmentView.State()
-                state.isSelected = index == self.state.selectedIndex
-                segmentView.withAnimatedChanges {
-                    segmentView.state = state
-                }
-                
-                let configuration = if let title = item.title {
-                    CategorySegmentView.Configuration(iconImage: UIImage(resource: .icons8Pennywise), title: title)  // UIImage(systemName: "poweroutlet.type.k.fill")!
-                } else {
-                    preconditionFailure()
-                }
-                segmentView.withAnimatedChanges {
-                    segmentView.configuration = configuration
-                }
                 segmentView.translatesAutoresizingMaskIntoConstraints = false
+                segmentView.state.isSelected = index == state.selectedIndex
+                segmentView.configuration = CategorySegmentView.Configuration(iconImage: item.iconImage, title: item.title)
                 scrollView.addSubview(segmentView)
                 segmentsView.append(segmentView)
             }
@@ -158,6 +115,35 @@ final class CategorySegmentedControl: Control {
                 }
             }
             NSLayoutConstraint.activate(segmentsConstraints)
+        } else if flags.isPartOfApplyState {
+            defer { flags.isPartOfApplyState = false }
+            
+            for (index, segmentView) in segmentsView.indexed() { // <-- Анимировано?
+                //segmentView.withAnimatedChanges {
+                    segmentView.state.isSelected = index == state.selectedIndex
+                //}
+            }
+            
+            let selectedSegmentView: CategorySegmentView? = if let selectedIndex = state.selectedIndex {
+                segmentsView[selectedIndex]
+            } else {
+                nil
+            }
+            NSLayoutConstraint.deactivate(segmentsBottomConstraint)
+            segmentsBottomConstraint.removeAll(keepingCapacity: true)
+            for segmentView in segmentsView {
+                let bottomConstraint = if let selectedSegmentView {
+                    if segmentView === selectedSegmentView {
+                        scrollView.contentLayoutGuide.bottomAnchor.constraint(equalTo: segmentView.bottomAnchor)
+                    } else {
+                        segmentView.firstBaselineAnchor.constraint(equalTo: selectedSegmentView.firstBaselineAnchor)
+                    }
+                } else {
+                    scrollView.contentLayoutGuide.bottomAnchor.constraint(equalTo: segmentView.bottomAnchor)
+                }
+                segmentsBottomConstraint += CollectionOfOne(bottomConstraint)
+            }
+            NSLayoutConstraint.activate(segmentsBottomConstraint)
         }
     }
     
@@ -185,7 +171,7 @@ final class CategorySegmentedControl: Control {
         ])
     }
     
-    init(frame: CGRect, configuration: Configuration) {
+    init(frame: CGRect, configuration: Configuration? = nil) {
         _state = .init(wrappedValue: State())
         _configuration = .init(wrappedValue: configuration)
         super.init(frame: frame, primaryAction: UIAction { _ in })
@@ -195,15 +181,18 @@ final class CategorySegmentedControl: Control {
 extension CategorySegmentedControl {
     
     private func applyState(_ previousState: State?, with context: UIInputChangesContext) {
-        if updatingConstraintsContext == nil { updatingConstraintsContext = UpdatingConstraintsContext() }
-        updatingConstraintsContext.wasAnimatedStateApply = flags.isAnimatedStateApply
-        
-        flags.needsUpdatingConstraintsOnStateChange = true
-        setNeedsUpdateConstraints()
-        setNeedsLayout()
-        
         if context.isAnimated {
             UIViewPropertyAnimator.runningPropertyAnimator(animation: .default1Spring) { [self] in
+                flags.isPartOfApplyState = true
+                setNeedsUpdateConstraints()
+                setNeedsLayout()
+                layoutIfNeeded()
+            }
+        } else {
+            flags.isPartOfApplyState = true
+            setNeedsUpdateConstraints()
+            setNeedsLayout()
+            if !context.isDeferred {
                 layoutIfNeeded()
             }
         }
@@ -213,34 +202,22 @@ extension CategorySegmentedControl {
 extension CategorySegmentedControl {
     
     private func applyConfiguration(_ previousConfiguration: Configuration?, with context: UIInputChangesContext) {
-        defer { flags.isAnimatedConfigurationApply = false }
-        
-        if updatingConstraintsContext == nil { updatingConstraintsContext = UpdatingConstraintsContext() }
-        updatingConstraintsContext.wasAnimatedConfigurationApply = flags.isAnimatedConfigurationApply
-        
-        flags.needsUpdatingConstraintsOnConfigurationChange = true
+        flags.isPartOfApplyConfiguration = true
         setNeedsUpdateConstraints()
-        if context.isAnimated {
-            updateConstraintsIfNeeded()
+        setNeedsLayout()
+        if !context.isDeferred {
+            layoutIfNeeded()
         }
     }
 }
 
 extension CategorySegmentedControl {
     
-    private struct UpdatingConstraintsContext {
-        var wasAnimatedStateApply = false
-        var wasAnimatedConfigurationApply = false
-    }
-}
-
-extension CategorySegmentedControl {
-    
     private struct Flags {
-        var isAnimatedStateApply = false
-        var isAnimatedConfigurationApply = false
-        var needsUpdatingConstraintsOnStateChange = false
-        var needsUpdatingConstraintsOnConfigurationChange = false
+        
+        var isPartOfApplyState = false
+        
+        var isPartOfApplyConfiguration = false
     }
 }
 
@@ -255,7 +232,7 @@ extension CategorySegmentedControl {
             super.init()
         }
         
-        override borrowing func copy() -> Self {
+        override func copy() -> Self {
             State(copy: self) as! Self
         }
         
@@ -278,7 +255,7 @@ extension CategorySegmentedControl {
             super.init()
         }
         
-        override borrowing func copy() -> Self {
+        override func copy() -> Self {
             Configuration(copy: self) as! Self
         }
         
@@ -293,19 +270,9 @@ extension CategorySegmentedControl.Configuration {
     
     struct Item: Hashable {
         
-        var title: String?
+        var iconImage: UIImage
         
-        var attributedTitle: AttributedString?
-        
-        init(title: String) {
-            self.title = title
-            self.attributedTitle = nil
-        }
-        
-        init(attributedTitle: AttributedString) {
-            self.title = nil
-            self.attributedTitle = attributedTitle
-        }
+        var title: String
     }
 }
 
@@ -355,54 +322,47 @@ final class CategorySegmentView: View {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        withAnimatedChanges {
-            state.isHighlighted = true
-        }
+        state.isHighlighted = true
+        setNeedsAnimatedInputsChanges()
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        withAnimatedChanges {
-            state.isHighlighted = false
-        }
+        state.isHighlighted = false
+        setNeedsAnimatedInputsChanges()
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        withAnimatedChanges {
-            state.isHighlighted = false
-        }
+        state.isHighlighted = false
+        setNeedsAnimatedInputsChanges()
     }
     
     override func updatingConstraints() {
         super.updatingConstraints()
-        
-        
-        
-        guard flags.needsUpdatingConstraintsOnSelectedChange else { return }
-        flags.needsUpdatingConstraintsOnSelectedChange = false
-        if state.isSelected {
-            bringSubviewToFront(iconImageView)
-            bringSubviewToFront(titleLabel)
-            NSLayoutConstraint.deactivate(nonselectedConstraints)
-            NSLayoutConstraint.activate(selectedConstraints)
-        } else {
-            bringSubviewToFront(selectedIconImageView)
-            bringSubviewToFront(selectedTitleLabel)
-            NSLayoutConstraint.deactivate(selectedConstraints)
-            NSLayoutConstraint.activate(nonselectedConstraints)
+        if flags.isPartOfSelectChange {
+            if state.isSelected {
+                NSLayoutConstraint.deactivate(nonselectedConstraints)
+                NSLayoutConstraint.activate(selectedConstraints)
+            } else {
+                NSLayoutConstraint.deactivate(selectedConstraints)
+                NSLayoutConstraint.activate(nonselectedConstraints)
+            }
         }
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        
-        guard flags.isPartOfConfigurationApply else { return }
-        flags.isPartOfConfigurationApply = false
-        if state.isSelected {
-            iconImageView.transform = CGAffineTransform(scaleX: selectedIconImageView.bounds.width / iconImageView.bounds.width, y: selectedIconImageView.bounds.height / iconImageView.bounds.height)
-            titleLabel.transform = CGAffineTransform(scaleX: selectedTitleLabel.bounds.width / titleLabel.bounds.width, y: selectedTitleLabel.bounds.height / titleLabel.bounds.height)
-        } else {
-            selectedIconImageView.transform = CGAffineTransform(scaleX: iconImageView.bounds.width / selectedIconImageView.bounds.width, y: iconImageView.bounds.height / selectedIconImageView.bounds.height)
-            selectedTitleLabel.transform = CGAffineTransform(scaleX: titleLabel.bounds.width / selectedTitleLabel.bounds.width, y: titleLabel.bounds.height / selectedTitleLabel.bounds.height)
+        if flags.isPartOfSelectChange || flags.isPartOfApplyConfiguration {
+            defer {
+                flags.isPartOfSelectChange = false
+                flags.isPartOfApplyConfiguration = false
+            }
+            if state.isSelected {
+                iconImageView.transform = CGAffineTransform(scaleX: selectedIconImageView.bounds.width / iconImageView.bounds.width, y: selectedIconImageView.bounds.height / iconImageView.bounds.height)
+                titleLabel.transform = CGAffineTransform(scaleX: selectedTitleLabel.bounds.width / titleLabel.bounds.width, y: selectedTitleLabel.bounds.height / titleLabel.bounds.height)
+            } else {
+                selectedIconImageView.transform = CGAffineTransform(scaleX: iconImageView.bounds.width / selectedIconImageView.bounds.width, y: iconImageView.bounds.height / selectedIconImageView.bounds.height)
+                selectedTitleLabel.transform = CGAffineTransform(scaleX: titleLabel.bounds.width / selectedTitleLabel.bounds.width, y: titleLabel.bounds.height / selectedTitleLabel.bounds.height)
+            }
         }
     }
     
@@ -475,39 +435,39 @@ final class CategorySegmentView: View {
 extension CategorySegmentView {
     
     private func applyState(_ previousState: State?, with context: UIInputChangesContext) {
-        selectedDidChange(previousState?.isSelected, with: context)
-        highlightedDidChange(previousState?.isHighlighted, with: context)
+        if state.isSelected != previousState?.isSelected {
+            selectedDidChange(previousState?.isSelected, with: context)
+        }
+        if state.isHighlighted != previousState?.isHighlighted {
+            highlightedDidChange(previousState?.isHighlighted, with: context)
+        }
     }
     
     private func selectedDidChange(_ previousSelected: Bool?, with context: UIInputChangesContext) {
-        guard state.isSelected != previousSelected else { return }
-        
         if context.isAnimated {
-            flags.needsUpdatingConstraintsOnSelectedChange = true
-            setNeedsUpdateConstraints()
-            
-            flags.needsUpdateLabelsTransformOnInputsChange = true
-            setNeedsLayout()
-            
             if state.isSelected {
                 selectedIconImageView.isHidden = false
                 selectedTitleLabel.isHidden = false
+                bringSubviewToFront(selectedIconImageView)
+                bringSubviewToFront(selectedTitleLabel)
             } else {
                 iconImageView.isHidden = false
                 titleLabel.isHidden = false
+                bringSubviewToFront(iconImageView)
+                bringSubviewToFront(titleLabel)
             }
-//            exchangeSubview(at: subviews.firstIndex(of: iconImageView)!, withSubviewAt: subviews.firstIndex(of: selectedIconImageView)!)
-//            exchangeSubview(at: subviews.firstIndex(of: titleLabel)!, withSubviewAt: subviews.firstIndex(of: selectedTitleLabel)!)
-//            
-            UIViewPropertyAnimator.runningPropertyAnimator(animation: .default2Spring) { [self] in
+            
+            UIViewPropertyAnimator.runningPropertyAnimator(animation: .spring(dampingRatio: 1.0, frequencyResponse: 0.35)) { [self] in
+                flags.isPartOfSelectChange = true
+                setNeedsUpdateConstraints()
+                setNeedsLayout()
                 layoutIfNeeded()
                 
                 if state.isSelected {
-                    iconImageView.alpha = 0.0
-                    titleLabel.alpha = 0.0
-                    
                     selectedIconImageView.transform = .identity
                     selectedTitleLabel.transform = .identity
+                    iconImageView.alpha = 0.0
+                    titleLabel.alpha = 0.0
                     selectedIconImageView.alpha = 1.0
                     selectedTitleLabel.alpha = 1.0
                 } else {
@@ -515,7 +475,6 @@ extension CategorySegmentView {
                     titleLabel.transform = .identity
                     iconImageView.alpha = 1.0
                     titleLabel.alpha = 1.0
-                    
                     selectedIconImageView.alpha = 0.0
                     selectedTitleLabel.alpha = 0.0
                 }
@@ -529,44 +488,59 @@ extension CategorySegmentView {
                 }
             }
         } else {
-            flags.needsUpdatingConstraintsOnSelectedChange = true
+            flags.isPartOfSelectChange = true
             setNeedsUpdateConstraints()
-            
-            flags.needsUpdateLabelsTransformOnInputsChange = true
             setNeedsLayout()
+            if !context.isDeferred {
+                layoutIfNeeded()
+            }
             
             if state.isSelected {
-                iconImageView.alpha = 0.0
-                iconImageView.isHidden = true
-                titleLabel.alpha = 0.0
-                titleLabel.isHidden = true
+                selectedIconImageView.isHidden = false
+                selectedTitleLabel.isHidden = false
+                bringSubviewToFront(selectedIconImageView)
+                bringSubviewToFront(selectedTitleLabel)
                 
                 selectedIconImageView.transform = .identity
-                selectedIconImageView.alpha = 1.0
-                selectedIconImageView.isHidden = false
                 selectedTitleLabel.transform = .identity
+                iconImageView.alpha = 0.0
+                titleLabel.alpha = 0.0
+                selectedIconImageView.alpha = 1.0
                 selectedTitleLabel.alpha = 1.0
-                selectedTitleLabel.isHidden = false
-            } else {
-                iconImageView.transform = .identity
-                iconImageView.alpha = 1.0
-                iconImageView.isHidden = false
-                titleLabel.transform = .identity
-                titleLabel.alpha = 1.0
-                titleLabel.isHidden = false
                 
+                iconImageView.isHidden = true
+                titleLabel.isHidden = true
+            } else {
+                iconImageView.isHidden = false
+                titleLabel.isHidden = false
+                bringSubviewToFront(iconImageView)
+                bringSubviewToFront(titleLabel)
+                
+                iconImageView.transform = .identity
+                titleLabel.transform = .identity
+                iconImageView.alpha = 1.0
+                titleLabel.alpha = 1.0
                 selectedIconImageView.alpha = 0.0
-                selectedIconImageView.isHidden = true
                 selectedTitleLabel.alpha = 0.0
+                
+                selectedIconImageView.isHidden = true
                 selectedTitleLabel.isHidden = true
             }
         }
     }
     
     private func highlightedDidChange(_ previousHighlighted: Bool?, with context: UIInputChangesContext) {
-        guard state.isHighlighted != previousHighlighted else { return }
-        
-        let action = { [self] in
+        if context.isAnimated {
+            UIViewPropertyAnimator.runningPropertyAnimator(animation: .gentleSpring) { [self] in
+                if state.isHighlighted {
+                    transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+                    alpha = 0.5
+                } else {
+                    transform = .identity
+                    alpha = 1.0
+                }
+            }
+        } else {
             if state.isHighlighted {
                 transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
                 alpha = 0.5
@@ -574,13 +548,6 @@ extension CategorySegmentView {
                 transform = .identity
                 alpha = 1.0
             }
-        }
-        if context.isAnimated {
-            UIViewPropertyAnimator.runningPropertyAnimator(animation: .gentleSpring) {
-                action()
-            }
-        } else {
-            action()
         }
     }
 }
@@ -602,7 +569,7 @@ extension CategorySegmentView {
             selectedTitleLabel.text = nil
         }
         
-        flags.isPartOfConfigurationApply = true
+        flags.isPartOfApplyConfiguration = true
         setNeedsLayout()
         
         if !context.isDeferred {
@@ -615,15 +582,9 @@ extension CategorySegmentView {
     
     private struct Flags {
         
-        var needsUpdatingConstraintsOnSelectedChange = false
+        var isPartOfSelectChange = false
         
-        var needsUpdateLabelsTransformOnInputsChange = false
-        
-        var isPartOfSelectedChange = false
-        
-        var isPartOfAnimatedSelectedChange = false
-        
-        var isPartOfConfigurationApply = false
+        var isPartOfApplyConfiguration = false
     }
 }
 

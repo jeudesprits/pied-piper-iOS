@@ -25,7 +25,7 @@ extension UIView {
         typealias WillChangeHandler = () -> Void
         
         @usableFromInline
-        var willChangeHandler: WillChangeHandler = { } {
+        var willChangeHandler: WillChangeHandler = {} {
             didSet {
                 value.willChangeHandler = willChangeHandler
             }
@@ -58,9 +58,9 @@ extension UIView {
             @inlinable
             set {
                 let oldValue = enclosingSelf[keyPath: storageKeyPath].value
-  
-                oldValue.willChangeHandler = { }
-               
+                
+                oldValue.willChangeHandler = {}
+                
                 if newValue != oldValue {
                     enclosingSelf[keyPath: storageKeyPath].willChangeHandler()
                 }

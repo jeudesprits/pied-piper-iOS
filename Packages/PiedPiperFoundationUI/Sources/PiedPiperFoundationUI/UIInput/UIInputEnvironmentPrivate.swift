@@ -5,6 +5,7 @@
 //  Created by Ruslan Lutfullin on 15/08/23.
 //
 
+import OrderedCollections
 import UIKit
 import UIKitUtilities
 import os
@@ -17,83 +18,96 @@ protocol UIInputEnvironmentPrivate: UIInputEnvironment {
 
 extension UIInputEnvironmentPrivate {
     
-    func _setNeedsStateChanges() {
-        inputChangesSystem.setNeedsStateChanges()
+    @inlinable
+    func _setNeedsInputsChanges() {
+        inputChangesSystem.setNeedsChanges()
     }
     
-    func _changesStateIfNeeded() {
-        inputChangesSystem.changesStateIfNeeded()
+    @inlinable
+    func _setNeedsInputChanges<State: UIState>(of input: UIView.StateObject<State>) {
+        inputChangesSystem.setNeedsChanges(of: input)
     }
     
-    func _setNeedsConfigurationChanges() {
-        inputChangesSystem.setNeedsConfigurationChanges()
+    @inlinable
+    func _setNeedsInputChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>) {
+        inputChangesSystem.setNeedsChanges(of: input)
     }
     
-    func _changesConfigurationIfNeeded() {
-        inputChangesSystem.changesConfigurationIfNeeded()
+    @inlinable
+    func _setNeedsAnimatedInputsChanges() {
+        inputChangesSystem.setNeedsAnimatedChanges()
     }
     
-    func _withAnimatedChanges(_ changes: () -> Void) {
-        inputChangesSystem.withAnimatedChanges(changes)
+    @inlinable
+    func _setNeedsAnimatedInputChanges<State: UIState>(of input: UIView.StateObject<State>) {
+        inputChangesSystem.setNeedsAnimatedChanges(of: input)
     }
     
-    func _withoutAnimatedChanges(_ changes: () -> Void) {
-        inputChangesSystem.withoutAnimatedChanges(changes)
+    @inlinable
+    func _setNeedsAnimatedInputChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>) {
+        inputChangesSystem.setNeedsAnimatedChanges(of: input)
+    }
+    
+    @inlinable
+    func _changesInputsIfNeeded() {
+        inputChangesSystem.changesIfNeeded()
     }
 }
 
 final class UIInputChangesSystem {
     
-    private unowned(unsafe) let environment: any UIInputEnvironmentPrivate
+    private let environmentID: ObjectIdentifier
     
     private let environmentTypeInfo: UIInputEnvironmentTypeInfo
     
-    private var currentContext: UIInputChangesContext!
+    private let environmentPointer: UnsafeMutableRawPointer
     
     private var currentTransaction: RunLoopPerformTransaction!
     
-    private var currentPendingChangesIdentifiers: Set<UUID> = []
+    private var currentContext: Context!
     
     init(for environment: some UIInputEnvironmentPrivate) {
-        self.environment = environment
+        environmentID = ObjectIdentifier(environment)
         environmentTypeInfo = UIInputEnvironmentTypeInfo(of: type(of: environment))
+        environmentPointer = Unmanaged.passUnretained(environment).toOpaque()
         prepareForChanges()
     }
 }
 
 extension UIInputChangesSystem {
     
-    func setNeedsStateChanges() {
+    func setNeedsChanges() {
         startDeferringChangesIfNeeded()
-        currentContext?.needsStateChanges = true
+        currentContext?.needsChanges = true
     }
     
-    func changesStateIfNeeded() {
-        guard currentContext?.needsStateChanges == true || currentContext?.isPendingStateChanges == true else { return }
-        currentTransaction?.commit()
-    }
-    
-    func setNeedsConfigurationChanges() {
+    func setNeedsChanges<State: UIState>(of input: UIView.StateObject<State>) {
         startDeferringChangesIfNeeded()
-        currentContext?.needsConfigurationChanges = true
+        currentContext?.needsChangesIdentifiers.insert(input.id)
     }
     
-    func changesConfigurationIfNeeded() {
-        guard currentContext?.needsConfigurationChanges == true || currentContext?.isPendingConfigurationChanges == true else { return }
-        currentTransaction?.commit()
+    func setNeedsChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>) {
+        startDeferringChangesIfNeeded()
+        currentContext?.needsChangesIdentifiers.insert(input.id)
     }
     
-    func withAnimatedChanges(_ changes: () -> Void) {
-        changes()
-        currentContext?.isDeferred = false
-        currentContext?.isAnimated = true
-        currentTransaction?.commit()
+    func setNeedsAnimatedChanges() {
+        startDeferringChangesIfNeeded()
+        currentContext?.needsAnimatedChanges = true
     }
     
-    func withoutAnimatedChanges(_ changes: () -> Void) {
-        changes()
-        currentContext?.isDeferred = false
-        currentContext?.isAnimated = false
+    func setNeedsAnimatedChanges<State: UIState>(of input: UIView.StateObject<State>) {
+        startDeferringChangesIfNeeded()
+        currentContext?.needsAnimatedChangesIdentifiers.insert(input.id)
+    }
+    
+    func setNeedsAnimatedChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>) {
+        startDeferringChangesIfNeeded()
+        currentContext?.needsAnimatedChangesIdentifiers.insert(input.id)
+    }
+    
+    func changesIfNeeded() {
+        currentContext?.needsDeferredChanges = false
         currentTransaction?.commit()
     }
 }
@@ -101,57 +115,70 @@ extension UIInputChangesSystem {
 extension UIInputChangesSystem {
     
     private func prepareForChanges() {
+        assert(currentTransaction == nil)
+        assert(currentContext == nil)
+        
         guard !(environmentTypeInfo.stateObjectProperties.isEmpty && environmentTypeInfo.configurationObjectProperties.isEmpty) else { return }
         
-        let environmentPointer = Unmanaged.passUnretained(environment as AnyObject).toOpaque()
+        OSLogger.uiinput.debug(
+            """
+            [environment=\(self.environmentTypeInfo.name, privacy: .public), \
+            environmentID=\(self.environmentID.debugDescription, privacy: .public)] \
+            Preparing Input objects for deferring changes...
+            """
+        )
         
         func visit(stateObjectPropertyOf type: (some StateObjectProperty).Type, with propertyInfo: StateObjectPropertyInfo) {
             let propertyPointer = environmentPointer.advanced(by: propertyInfo.offset).assumingMemoryBound(to: type)
             propertyPointer.pointee.willChangeHandler = { [unowned(unsafe) self] in
+                let propertyIdentifier = propertyPointer.pointee.id
+                let isPendingChangesIdentifier = currentContext?.pendingChangesIdentifiers.contains(propertyIdentifier) ?? false
+                                
+                guard !isPendingChangesIdentifier else { return }
+                                
+                let previousValue = propertyPointer.pointee.value.copy()
+                propertyPointer.pointee.previousValue = consume previousValue
+                
+                startDeferringChangesIfNeeded()
+                currentContext.pendingChangesIdentifiers.insert(propertyIdentifier)
+                
                 OSLogger.uiinput.debug(
                     """
                     [environment=\(self.environmentTypeInfo.name, privacy: .public), \
-                    environmentID=\(ObjectIdentifier(self.environment).debugDescription, privacy: .public), \
+                    environmentID=\(self.environmentID.debugDescription, privacy: .public), \
+                    transactionID=\(self.currentTransaction.id, privacy: .public), \
                     stateObject=\(propertyInfo.typeName, privacy: .public), \
-                    isPendingStateChanges=\(self.currentContext?.isPendingStateChanges ?? false)] \
-                    State object will changed
+                    stateObjectID=\(propertyIdentifier, privacy: .public)] \
+                    State object pending changes
                     """
                 )
-                
-                let propertyIdentifier = propertyPointer.pointee.id
-                guard !currentPendingChangesIdentifiers.contains(propertyIdentifier) else { return }
-                
-                let previousValue = propertyPointer.pointee.value.copy()
-                propertyPointer.pointee.previousValue = previousValue
-                
-                startDeferringChangesIfNeeded()
-                currentContext?.isPendingStateChanges = true
-                currentPendingChangesIdentifiers.insert(propertyIdentifier)
             }
         }
         
         func visit(configurationObjectPropertyOf type: (some ConfigurationObjectProperty).Type, with propertyInfo: ConfigurationObjectPropertyInfo) {
             let propertyPointer = environmentPointer.advanced(by: propertyInfo.offset).assumingMemoryBound(to: type)
             propertyPointer.pointee.willChangeHandler = { [unowned(unsafe) self] in
+                let propertyIdentifier = propertyPointer.pointee.id
+                let isPendingChangesIdentifier = currentContext?.pendingChangesIdentifiers.contains(propertyIdentifier) ?? false
+                
+                guard !isPendingChangesIdentifier else { return }
+                
+                let previousValue = propertyPointer.pointee.value?.copy()
+                propertyPointer.pointee.previousValue = consume previousValue
+                
+                startDeferringChangesIfNeeded()
+                currentContext.pendingChangesIdentifiers.insert(propertyIdentifier)
+                
                 OSLogger.uiinput.debug(
                     """
                     [environment=\(self.environmentTypeInfo.name, privacy: .public), \
-                    environmentID=\(ObjectIdentifier(self.environment).debugDescription, privacy: .public), \
+                    environmentID=\(self.environmentID.debugDescription, privacy: .public), \
+                    transactionID=\(self.currentTransaction.id, privacy: .public), \
                     configurationObject=\(propertyInfo.typeName, privacy: .public), \
-                    isPendingConfigurationChanges=\(self.currentContext?.isPendingConfigurationChanges ?? false)] \
-                    Configuration object will changed
+                    configurationObjectID=\(propertyIdentifier, privacy: .public)] \
+                    Configuration object pending changes
                     """
                 )
-                
-                let propertyIdentifier = propertyPointer.pointee.id
-                guard !currentPendingChangesIdentifiers.contains(propertyIdentifier) else { return }
-                
-                let previousValue = propertyPointer.pointee.value?.copy()
-                propertyPointer.pointee.previousValue = previousValue
-                
-                startDeferringChangesIfNeeded()
-                currentContext?.isPendingConfigurationChanges = true
-                currentPendingChangesIdentifiers.insert(propertyIdentifier)
             }
         }
         
@@ -165,17 +192,8 @@ extension UIInputChangesSystem {
             visit(configurationObjectPropertyOf: type, with: propertyInfo)
         }
         
-        OSLogger.uiinput.debug(
-            """
-            [environment=\(self.environmentTypeInfo.name, privacy: .public), \
-            environmentID=\(ObjectIdentifier(self.environment).debugDescription, privacy: .public)] \
-            Preparing input objects for deferring changes
-            """
-        )
-        
         startDeferringChangesIfNeeded()
-        currentContext?.isPendingStateChanges = !environmentTypeInfo.stateObjectProperties.isEmpty
-        currentContext?.isPendingConfigurationChanges = !environmentTypeInfo.configurationObjectProperties.isEmpty
+        currentContext?.needsChanges = true
     }
 }
 
@@ -184,110 +202,142 @@ extension UIInputChangesSystem {
     private func startDeferringChangesIfNeeded() {
         guard currentTransaction == nil else { return }
         assert(currentContext == nil)
-        assert(currentPendingChangesIdentifiers.isEmpty)
         
-        let context = UIInputChangesContext()
-        currentContext = consume context
+        currentContext = Context()
         
-        let transaction = RunLoopPerformTransaction { [weak self] in
+        currentTransaction = RunLoopPerformTransaction { [weak self] in
             guard let self else { return }
+            
+            performDeferredChanges()
             
             OSLogger.uiinput.debug(
                 """
-                [environment=\(environmentTypeInfo.name, privacy: .public), \
-                environmentID=\(ObjectIdentifier(environment).debugDescription, privacy: .public), \
+                [environment=\(self.environmentTypeInfo.name, privacy: .public), \
+                environmentID=\(self.environmentID.debugDescription, privacy: .public), \
                 transactionID=\(self.currentTransaction.id, privacy: .public)] \
                 Input objects changes transaction committed
                 """
             )
             
-            performDeferredChanges()
-            
             currentTransaction = nil
             currentContext = nil
-            currentPendingChangesIdentifiers.removeAll(keepingCapacity: true)
         }
         
         OSLogger.uiinput.debug(
             """
             [environment=\(self.environmentTypeInfo.name, privacy: .public), \
-            environmentID=\(ObjectIdentifier(self.environment).debugDescription, privacy: .public), \
-            transactionID=\(transaction.id, privacy: .public)] \
+            environmentID=\(self.environmentID.debugDescription, privacy: .public), \
+            transactionID=\(self.currentTransaction.id, privacy: .public)] \
             Input objects changes transaction enqueued
             """
         )
-        currentTransaction = consume transaction
     }
     
     private func performDeferredChanges() {
-        OSLogger.uiinput.debug(
-            """
-            [environment=\(self.environmentTypeInfo.name, privacy: .public), \
-            environmentID=\(ObjectIdentifier(self.environment).debugDescription, privacy: .public)] \
-            Starting performing input objects changes
-            """
-        )
-        
-        let environmentPointer = Unmanaged.passUnretained(environment as AnyObject).toOpaque()
-        
-        if currentContext.needsStateChanges || currentContext.isPendingStateChanges {
-            func visit(stateObjectPropertyOf type: (some StateObjectProperty).Type, with propertyInfo: StateObjectPropertyInfo) {
-                let property = environmentPointer.advanced(by: propertyInfo.offset).assumingMemoryBound(to: type).pointee
-                let state = property.value
-                let previousState = property.previousValue
-                if currentContext.needsStateChanges || state != previousState {
-                    OSLogger.uiinput.debug(
-                        """
-                        [environment=\(self.environmentTypeInfo.name, privacy: .public), \
-                        environmentID=\(ObjectIdentifier(self.environment).debugDescription, privacy: .public), \
-                        stateObject=\(propertyInfo.typeName, privacy: .public)] \
-                        Performing state object changes
-                        """
-                    )
-                    for changesHandler in property.registeredChangesHandlers.values {
-                        changesHandler(previousState, currentContext)
-                    }
-                }
-            }
-            
-            for propertyInfo in environmentTypeInfo.stateObjectProperties {
-                let type = propertyInfo.type
-                visit(stateObjectPropertyOf: type, with: propertyInfo)
-            }
-        }
-        
-        if currentContext.needsConfigurationChanges || currentContext.isPendingConfigurationChanges {
-            func visit(configurationObjectPropertyOf type: (some ConfigurationObjectProperty).Type, with propertyInfo: ConfigurationObjectPropertyInfo) {
-                let property = environmentPointer.advanced(by: propertyInfo.offset).assumingMemoryBound(to: type).pointee
-                let configuration = property.value
-                let previousConfiguration = property.previousValue
-                if currentContext.needsConfigurationChanges || configuration != previousConfiguration {
-                    OSLogger.uiinput.debug(
-                        """
-                        [environment=\(self.environmentTypeInfo.name, privacy: .public), \
-                        environmentID=\(ObjectIdentifier(self.environment).debugDescription, privacy: .public), \
-                        configurationObject=\(propertyInfo.typeName, privacy: .public)] \
-                        Performing configuration object changes
-                        """
-                    )
-                    for changesHandler in property.registeredChangesHandlers.values {
-                        changesHandler(previousConfiguration, currentContext)
-                    }
-                }
-            }
-            
-            for propertyInfo in environmentTypeInfo.configurationObjectProperties {
-                let type = propertyInfo.type
-                visit(configurationObjectPropertyOf: type, with: propertyInfo)
-            }
-        }
+        assert(currentTransaction != nil)
+        assert(currentContext != nil)
         
         OSLogger.uiinput.debug(
             """
             [environment=\(self.environmentTypeInfo.name, privacy: .public), \
-            environmentID=\(ObjectIdentifier(self.environment).debugDescription, privacy: .public)] \
-            Finished performing input objects changes
+            environmentID=\(self.environmentID.debugDescription, privacy: .public), \
+            transactionID=\(self.currentTransaction.id, privacy: .public)] \
+            Performing Input objects changes...
             """
         )
+        
+        func visit(stateObjectPropertyOf type: (some StateObjectProperty).Type, with propertyInfo: StateObjectPropertyInfo) {
+            let propertyPointer = environmentPointer.advanced(by: propertyInfo.offset).assumingMemoryBound(to: type)
+            let propertyIdentifier = propertyPointer.pointee.id
+            
+            let shouldPerform = if currentContext.pendingChangesIdentifiers.contains(propertyIdentifier), propertyPointer.pointee.value != propertyPointer.pointee.previousValue {
+                true
+            } else if currentContext.needsChanges || currentContext.needsChangesIdentifiers.contains(propertyIdentifier) {
+                true
+            } else {
+                false
+            }
+            guard shouldPerform else { return }
+            
+            OSLogger.uiinput.debug(
+                """
+                [environment=\(self.environmentTypeInfo.name, privacy: .public), \
+                environmentID=\(self.environmentID.debugDescription, privacy: .public), \
+                transactionID=\(self.currentTransaction.id, privacy: .public), \
+                stateObject=\(propertyInfo.typeName, privacy: .public), \
+                stateObjectID=\(propertyIdentifier, privacy: .public)] \
+                Performing State object changes...
+                """
+            )
+            
+            var context = UIInputChangesContext()
+            context.isDeferred = currentContext.needsDeferredChanges
+            context.isAnimated = currentContext.needsAnimatedChanges || currentContext.needsAnimatedChangesIdentifiers.contains(propertyIdentifier)
+            
+            for changesHandler in propertyPointer.pointee.registeredChangesHandlers.values {
+                changesHandler(propertyPointer.pointee.previousValue, context)
+            }
+        }
+        
+        func visit(configurationObjectPropertyOf type: (some ConfigurationObjectProperty).Type, with propertyInfo: ConfigurationObjectPropertyInfo) {
+            let propertyPointer = environmentPointer.advanced(by: propertyInfo.offset).assumingMemoryBound(to: type)
+            let propertyIdentifier = propertyPointer.pointee.id
+            
+            let shouldPerform = if currentContext.pendingChangesIdentifiers.contains(propertyIdentifier), propertyPointer.pointee.value != propertyPointer.pointee.previousValue {
+                true
+            } else if currentContext.needsChanges || currentContext.needsChangesIdentifiers.contains(propertyIdentifier) {
+                true
+            } else {
+                false
+            }
+            guard shouldPerform else { return }
+            
+            OSLogger.uiinput.debug(
+                """
+                [environment=\(self.environmentTypeInfo.name, privacy: .public), \
+                environmentID=\(self.environmentID.debugDescription, privacy: .public), \
+                transactionID=\(self.currentTransaction.id, privacy: .public), \
+                configurationObject=\(propertyInfo.typeName, privacy: .public), \
+                configurationID=\(propertyIdentifier, privacy: .public)] \
+                Performing Configuration object changes...
+                """
+            )
+            
+            var context = UIInputChangesContext()
+            context.isDeferred = currentContext.needsDeferredChanges
+            context.isAnimated = currentContext.needsAnimatedChanges || currentContext.needsAnimatedChangesIdentifiers.contains(propertyIdentifier)
+            
+            for changesHandler in propertyPointer.pointee.registeredChangesHandlers.values {
+                changesHandler(propertyPointer.pointee.previousValue, context)
+            }
+        }
+        
+        for propertyInfo in environmentTypeInfo.stateObjectProperties {
+            let type = propertyInfo.type
+            visit(stateObjectPropertyOf: type, with: propertyInfo)
+        }
+        
+        for propertyInfo in environmentTypeInfo.configurationObjectProperties {
+            let type = propertyInfo.type
+            visit(configurationObjectPropertyOf: type, with: propertyInfo)
+        }
+    }
+}
+
+extension UIInputChangesSystem {
+    
+    struct Context {
+        
+        var needsDeferredChanges = true
+        
+        var pendingChangesIdentifiers: Set<UUID> = []
+        
+        var needsChanges = false
+        
+        var needsChangesIdentifiers: Set<UUID> = []
+        
+        var needsAnimatedChanges = false
+        
+        var needsAnimatedChangesIdentifiers: Set<UUID> = []
     }
 }

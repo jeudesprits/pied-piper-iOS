@@ -13,7 +13,7 @@ protocol InputObjectProperty: ObservableProperty {
     associatedtype Input: UIInput
     
     var id: UUID { get }
-        
+    
     typealias ChangesHandler = (_ previousInput: Input?, _ context: UIInputChangesContext) -> Void
 
     var registeredChangesHandlers: OrderedDictionary<UIInputChangesRegistration, ChangesHandler> { get set }

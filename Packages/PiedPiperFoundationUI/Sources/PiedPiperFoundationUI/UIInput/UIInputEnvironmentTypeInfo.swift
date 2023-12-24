@@ -26,9 +26,13 @@ struct UIInputEnvironmentTypeInfo {
         
         _forEachField(of: environmentType, options: [.classType, .ignoreUnknown]) { _, offset, type in
             if let type = type as? any StateObjectProperty.Type {
-                stateObjectProperties_.append(StateObjectPropertyInfo(offset: offset, typeName: _typeName(type), type: type))
+                var typeName = _typeName(type)
+                typeName.trimPrefix("(extension in PiedPiperFoundationUI):__C.UIView.")
+                stateObjectProperties_.append(StateObjectPropertyInfo(offset: offset, typeName: typeName, type: type))
             } else if let type = type as? any ConfigurationObjectProperty.Type {
-                configurationObjectProperties_.append(ConfigurationObjectPropertyInfo(offset: offset, typeName: _typeName(type), type: type))
+                var typeName = _typeName(type)
+                typeName.trimPrefix("(extension in PiedPiperFoundationUI):__C.UIView.")
+                configurationObjectProperties_.append(ConfigurationObjectPropertyInfo(offset: offset, typeName: typeName, type: type))
             }
             return true
         }

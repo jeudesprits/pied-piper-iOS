@@ -8,33 +8,37 @@
 import UIKit
 
 open class CollectionView: UICollectionView, ViewProtocol, ViewProtocolPrivate, UIInputEnvironment, UIInputEnvironmentPrivate, UIInputChangesObservable {
-	
+    
     // MARK: -
     
     final var inputChangesSystem: UIInputChangesSystem!
     
-    public final func setNeedsStateChanges() {
-        _setNeedsStateChanges()
+    public final func setNeedsInputsChanges() {
+        _setNeedsInputsChanges()
     }
     
-    public final func changesStateIfNeeded() {
-        _changesStateIfNeeded()
+    public final func setNeedsInputChanges<State: UIState>(of input: UIView.StateObject<State>) {
+        _setNeedsInputChanges(of: input)
     }
     
-    public final func setNeedsConfigurationChanges() {
-        _setNeedsConfigurationChanges()
+    public final func setNeedsInputChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>) {
+        _setNeedsInputChanges(of: input)
     }
     
-    public final func changesConfigurationIfNeeded() {
-        _changesConfigurationIfNeeded()
+    public final func setNeedsAnimatedInputsChanges() {
+        _setNeedsAnimatedInputsChanges()
     }
     
-    public final func withAnimatedChanges(_ changes: () -> Void) {
-        _withAnimatedChanges(changes)
+    public final func setNeedsAnimatedInputChanges<State: UIState>(of input: UIView.StateObject<State>) {
+        _setNeedsAnimatedInputChanges(of: input)
     }
     
-    public final func withoutAnimatedChanges(_ changes: () -> Void) {
-        _withoutAnimatedChanges(changes)
+    public final func setNeedsAnimatedInputChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>) {
+        _setNeedsAnimatedInputChanges(of: input)
+    }
+    
+    public final func changesInputsIfNeeded() {
+        _changesInputsIfNeeded()
     }
     
     // MARK: -
