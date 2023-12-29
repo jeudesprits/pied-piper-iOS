@@ -5,7 +5,7 @@
 //  Created by Ruslan Lutfullin on 14/12/23.
 //
 
-protocol ConfigurationObjectProperty: InputObjectProperty {
+protocol ConfigurationObjectProperty: DeferredChangesInputObjectProperty where Input: UIConfiguration {
     
     var previousValue: Input? { get set }
     

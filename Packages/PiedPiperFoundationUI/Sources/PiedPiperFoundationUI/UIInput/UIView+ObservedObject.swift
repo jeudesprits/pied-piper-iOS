@@ -1,8 +1,8 @@
 //
-//  ConfigurationObject.swift
+//  UIView+ObservedObject.swift
 //
 //
-//  Created by Ruslan Lutfullin on 22/05/23.
+//  Created by Ruslan Lutfullin on 28/12/23.
 //
 
 import OrderedCollections
@@ -11,19 +11,19 @@ import UIKit
 extension UIView {
     
     @propertyWrapper
-    public struct ConfigurationObject<Configuration: UIConfiguration>: ConfigurationObjectProperty {
+    public struct ObservedObject<Input: UIInput>: ObservedObjectProperty {
         
         @usableFromInline
-        typealias Input = Configuration
+        typealias Input = Input
         
         @usableFromInline
         let id: UUID
         
         @usableFromInline
-        var previousValue: Configuration?
+        var previousValue: Input?
         
         @usableFromInline
-        var value: Configuration?
+        var value: Input?
         
         @usableFromInline
         typealias WillChangeHandler = () -> Void
@@ -36,13 +36,23 @@ extension UIView {
         }
         
         @usableFromInline
-        typealias ChangesHandler = (_ previousConfiguration: Configuration?, _ context: UIInputChangesContext) -> Void
+        typealias DidChangeHandler = () -> Void
+        
+        @usableFromInline
+        var didChangeHandler: DidChangeHandler = {} {
+            didSet {
+                value?.didChangeHandler = didChangeHandler
+            }
+        }
+        
+        @usableFromInline
+        typealias ChangesHandler = (_ previousInput: Input?) -> Void
         
         @usableFromInline
         var registeredChangesHandlers: OrderedDictionary<UIInputChangesRegistration, ChangesHandler> = [:]
         
-        @available(*, unavailable, message: "'@ConfigurationObject' attribute is class constrained that conforms 'UIInputEnvironment' protocol. Use it with properties of that classes, not with other classes or non-class types like struct")
-        public var wrappedValue: Configuration? {
+        @available(*, unavailable, message: "'@ObservedObject' attribute is class constrained that conforms 'UIInputEnvironment' protocol. Use it with properties of that classes, not with other classes or non-class types like struct")
+        public var wrappedValue: Input? {
             get {
                 fatalError()
             }
@@ -54,9 +64,9 @@ extension UIView {
         @inlinable
         public static subscript<EnclosingSelf: UIInputEnvironment>(
             _enclosingInstance enclosingSelf: EnclosingSelf,
-            wrapped wrappedKeyPath: ReferenceWritableKeyPath<EnclosingSelf, Configuration?>,
+            wrapped wrappedKeyPath: ReferenceWritableKeyPath<EnclosingSelf, Input>,
             storage storageKeyPath: ReferenceWritableKeyPath<EnclosingSelf, Self>
-        ) -> Configuration? {
+        ) -> Input? {
             @inlinable
             get {
                 enclosingSelf[keyPath: storageKeyPath].value
@@ -64,15 +74,19 @@ extension UIView {
             @inlinable
             set {
                 let oldValue = enclosingSelf[keyPath: storageKeyPath].value
-                
                 oldValue?.willChangeHandler = {}
+                oldValue?.didChangeHandler = {}
                 
                 if newValue != oldValue {
                     enclosingSelf[keyPath: storageKeyPath].willChangeHandler()
+                    enclosingSelf[keyPath: storageKeyPath].value = newValue
+                    enclosingSelf[keyPath: storageKeyPath].didChangeHandler()
+                } else {
+                    enclosingSelf[keyPath: storageKeyPath].value = newValue
                 }
-                enclosingSelf[keyPath: storageKeyPath].value = newValue
                 
                 newValue?.willChangeHandler = enclosingSelf[keyPath: storageKeyPath].willChangeHandler
+                newValue?.didChangeHandler = enclosingSelf[keyPath: storageKeyPath].didChangeHandler
             }
         }
         
@@ -89,7 +103,7 @@ extension UIView {
         }
         
         @inlinable
-        public init(wrappedValue: Configuration?) {
+        public init(wrappedValue: Input?) {
             id = UUID()
             value = wrappedValue
         }

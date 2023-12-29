@@ -5,15 +5,15 @@
 //  Created by Ruslan Lutfullin on 16/04/23.
 //
 
-import UIKit
+import SwiftUtilities
 import TimingFunctions
+import UIKit
 
-///
 public final class DisplayLinkAnimator<Value: InterpolatableData>: DisplayLink {
 	
 	private var delay: Double
 	
-	private let interpolation: Interpolation
+	private var interpolation: Interpolation
 	
 	private let action: (_ value: Value) -> Void
 	
@@ -24,13 +24,7 @@ public final class DisplayLinkAnimator<Value: InterpolatableData>: DisplayLink {
 	private var deltaTime = 0.0
 	
 	public func start() {
-		if state == .inactive {
-			DispatchQueue.main.async {
-				self._start()
-			}
-		} else {
-			_start()
-		}
+        _start()
 	}
 	
 	public func stop(withoutFinishing finishing: Bool) {
@@ -58,7 +52,34 @@ public final class DisplayLinkAnimator<Value: InterpolatableData>: DisplayLink {
 		startTime = 0.0
 		_pause()
 	}
-	
+    
+    public var isReversed = false {
+        didSet {
+            interpolation.isReversed = isReversed
+            //deltaTime = interpolation.duration - deltaTime
+        }
+    }
+    
+    private var fraction = 0.0
+    
+    public var fractionComplete: Double {
+        get {
+            fraction
+        }
+        set {
+            fraction = newValue
+            let (deltaTime, value) = interpolation(fraction: clamp(fraction, min: 0.0, max: 1.0))
+            self.deltaTime = deltaTime
+            action(value)
+        }
+    }
+    
+    public var scrubsLinearly = true {
+        didSet {
+            interpolation.isLinearFractioned = scrubsLinearly
+        }
+    }
+    
 	@objc
 	internal override func heartbit(_ displayLink: CADisplayLink) {
 		let targetTime = displayLink.targetTimestamp
@@ -66,12 +87,18 @@ public final class DisplayLinkAnimator<Value: InterpolatableData>: DisplayLink {
 			startTime = targetTime - deltaTime
 		}
 		deltaTime = targetTime - startTime
-		
-		let value = interpolation(&deltaTime)
+        
+        //print("deltaTime: \(deltaTime)")
+        #if targetEnvironment(simulator)
+            deltaTime /= Double(slowAnimationsCoefficient())
+        #endif
+        let (fraction, value) = interpolation(deltaTime: deltaTime)
+        self.fraction = fraction
 		action(value)
 		
 		if _slowPath(deltaTime >= interpolation.duration) {
 			if value != interpolation.to {
+                fractionComplete = 1.0
 				action(interpolation.to)
 			}
 			stop(withoutFinishing: true)
@@ -90,7 +117,7 @@ public final class DisplayLinkAnimator<Value: InterpolatableData>: DisplayLink {
 	) {
 		assert(delay >= 0.0)
 		self.delay = delay
-		self.interpolation = .init(from: from, to: to, animation: animation)
+		self.interpolation = Interpolation(from: from, to: to, animation: animation)
 		self.action = action
 		self.completion = completion
 		super.init(mode: .common, preferredFrameRateRange: preferredFrameRateRange)
@@ -120,7 +147,6 @@ public final class DisplayLinkAnimator<Value: InterpolatableData>: DisplayLink {
 	}
 }
 
-///
 extension DisplayLinkAnimator {
 	
 	internal struct Interpolation {
@@ -130,71 +156,117 @@ extension DisplayLinkAnimator {
 		internal let to: Value
 		
 		internal let duration: Double
-		
-		internal let interpolate: (_ deltaTime: inout Double) -> Value
+        
+        internal var isReversed = false
+        
+        internal var isLinearFractioned = true
+        
+        internal let timedInterpolate: (_ deltaTime: Double, _ isReversed: Bool) -> (fraction: Double, value: Value)
+        
+        internal let fractionedInterpolate: (_ fraction: Double, _ isReversed: Bool, _ isLinearFractioned: Bool) -> (deltaTime: Double, value: Value)
 		
 		@_transparent
-		internal func callAsFunction(_ deltaTime: inout Double) -> Value {
-			interpolate(&deltaTime)
+		internal func callAsFunction(deltaTime: Double) -> (fraction: Double, value: Value) {
+            timedInterpolate(deltaTime, isReversed)
 		}
+        
+        @_transparent
+        internal func callAsFunction(fraction: Double) -> (deltaTime:Double, value: Value) {
+            fractionedInterpolate(fraction, isReversed, isLinearFractioned)
+        }
 		
 		internal init(from: Value, to: Value, animation: borrowing Animation) {
 			self.from = from
 			self.to = to
-			
+            
 			switch animation.animationType {
 			case let .easeAnimation(duration, easeTimingFunction):
 				self.duration = duration
-				interpolate = { deltaTime in
-#if targetEnvironment(simulator)
-					deltaTime /= Double(slowAnimationsCoefficient())
-#endif
+                
+                timedInterpolate = { deltaTime, isReversed in
 					if _slowPath(deltaTime >= duration) {
-						return to
+                        return (1.0, to)
 					} else {
 						_onFastPath()
 						var fraction = deltaTime / duration
-						fraction = easeTimingFunction(fraction)
-						return from.mixed(with: to, using: fraction)
+                        fraction = easeTimingFunction(fraction)
+                        if isReversed {
+                            fraction = 1.0 - fraction
+                        }
+						return (fraction, from.mixed(with: to, using: fraction))
 					}
 				}
+                
+                fractionedInterpolate = { fraction, isReversed, isLinearFractioned in
+                    var fraction = fraction
+                    if _slowPath(!isLinearFractioned) {
+                        fraction = easeTimingFunction(fraction)
+                    }
+                    if isReversed {
+                        fraction = 1.0 - fraction
+                    }
+                    return (fraction * duration, from.mixed(with: to, using: fraction))
+                }
 				
 			case let .stepAnimation(duration, stepTimingFunction):
 				self.duration = duration
-				interpolate = { deltaTime in
-#if targetEnvironment(simulator)
-					deltaTime /= Double(slowAnimationsCoefficient())
-#endif
-					if _slowPath(deltaTime >= duration) {
-						return to
-					} else {
-						_onFastPath()
-						var fraction = deltaTime / duration
-						fraction = stepTimingFunction(fraction)
-						return from.mixed(with: to, using: fraction)
-					}
-				}
+                
+                timedInterpolate = { deltaTime, isReversed in
+                    if _slowPath(deltaTime >= duration) {
+                        return (1.0, to)
+                    } else {
+                        _onFastPath()
+                        var fraction = deltaTime / duration
+                        fraction = stepTimingFunction(fraction)
+                        if isReversed { 
+                            fraction = 1.0 - fraction
+                        }
+                        return (fraction, from.mixed(with: to, using: fraction))
+                    }
+                }
+                
+                fractionedInterpolate = { fraction, isReversed, isLinearFractioned in
+                    var fraction = fraction
+                    if _slowPath(!isLinearFractioned) { 
+                        fraction = stepTimingFunction(fraction)
+                    }
+                    if isReversed { 
+                        fraction = 1.0 - fraction
+                    }
+                    return (fraction * duration, from.mixed(with: to, using: fraction))
+                }
 				
 			case let .springAnimation(settlingDuration, springTimingFunction):
-				self.duration = settlingDuration
-				interpolate = { deltaTime in
-#if targetEnvironment(simulator)
-					deltaTime /= Double(slowAnimationsCoefficient())
-#endif
-					if _slowPath(deltaTime >= settlingDuration) {
-						return to
-					} else {
-						_onFastPath()
-						let fraction = 1.0 - springTimingFunction(deltaTime)
-						return from.mixed(with: to, using: fraction)
-					}
+				duration = settlingDuration
+                
+                timedInterpolate = { deltaTime, isReversed in
+                    if _slowPath(deltaTime >= settlingDuration) {
+                        return (1.0, to)
+                    } else {
+                        _onFastPath()
+                        var fraction = 1.0 - springTimingFunction(deltaTime)
+                        if isReversed {
+                            fraction = 1.0 - fraction
+                        }
+                        return (fraction, from.mixed(with: to, using: fraction))
+                    }
 				}
+                
+                fractionedInterpolate = { fraction, isReversed, isLinearFractioned in
+                    var fraction = fraction
+                    if _slowPath(!isLinearFractioned) {
+                        fraction = 1.0 - springTimingFunction(fraction * settlingDuration)
+                    }
+                    if isReversed {
+                        fraction = 1.0 - fraction
+                    }
+                    return (fraction * settlingDuration, from.mixed(with: to, using: fraction))
+                }
 			}
 		}
 	}
 }
 
-///
 extension DisplayLink {
 	
 	public struct Animation {
@@ -207,7 +279,6 @@ extension DisplayLink {
 	}
 }
 
-///
 extension DisplayLink.Animation {
 	
 	internal enum AnimationType {

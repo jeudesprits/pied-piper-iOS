@@ -17,7 +17,7 @@ extension UIScrollView {
         return CGRect(origin: bounds.origin, size: size)
     }
     
-    public final var beginContentOffset: CGPoint {
+    public final var startContentOffset: CGPoint {
         CGPoint(x: -adjustedContentInset.left, y: -adjustedContentInset.top)
     }
     

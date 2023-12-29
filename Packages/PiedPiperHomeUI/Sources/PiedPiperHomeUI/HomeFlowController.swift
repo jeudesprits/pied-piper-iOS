@@ -11,7 +11,7 @@ import PiedPiperCoreUI
 public final class HomeFlowController: NavigationController {
     
     public init() {
-        super.init(rootViewController: HomeViewController())
+        super.init(rootViewController: HomeCollectionViewController())
         let tabBarImage = UIImage(systemName: "play.rectangle.fill")!
         tabBarItem = UITabBarItem(title: "Смотреть", image: tabBarImage, selectedImage: tabBarImage)
         navigationBar.prefersLargeTitles = true

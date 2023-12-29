@@ -7,7 +7,6 @@
 
 import UIKit
 
-///
 public final class ContiniousDisplayLinkAnimator: DisplayLink {
 	
 	private let action: () -> Void

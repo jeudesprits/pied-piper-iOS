@@ -53,7 +53,7 @@
          <EnvironmentVariable
             key = "com.jeudesprits.FoundationUI.UIInputDebug"
             value = "YES"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
       </EnvironmentVariables>
    </LaunchAction>

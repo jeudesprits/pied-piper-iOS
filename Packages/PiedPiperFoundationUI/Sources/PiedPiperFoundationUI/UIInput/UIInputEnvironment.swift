@@ -27,3 +27,14 @@ public protocol UIInputEnvironment: AnyObject {
     
     func contextForInputChanges<Configuration: UIConfiguration>(of input: UIView.ConfigurationObject<Configuration>) -> UIInputChangesContext?
 }
+
+extension UIView {
+    
+    @TaskLocal static var performingWithoutInputsChanges = false
+    
+    public static func performWithoutInputsChanges(_ actionsWithoutInputsChanges: () -> Void) {
+        $performingWithoutInputsChanges.withValue(true) {
+            actionsWithoutInputsChanges()
+        }
+    }
+}

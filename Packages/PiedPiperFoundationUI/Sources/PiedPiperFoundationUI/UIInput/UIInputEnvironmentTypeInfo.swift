@@ -15,14 +15,16 @@ struct UIInputEnvironmentTypeInfo {
     
     let configurationObjectProperties: [ConfigurationObjectPropertyInfo]
     
+    let observedObjectProperties: [ObservedObjectPropertyInfo]
+    
     init(of environmentType: (some UIInputEnvironmentPrivate).Type) {
         name = _typeName(environmentType)
         
         var stateObjectProperties_: [StateObjectPropertyInfo] = []
-        stateObjectProperties_.reserveCapacity(3)
         
         var configurationObjectProperties_: [ConfigurationObjectPropertyInfo] = []
-        configurationObjectProperties_.reserveCapacity(3)
+        
+        var observedObjectProperties_: [ObservedObjectPropertyInfo] = []
         
         _forEachField(of: environmentType, options: [.classType, .ignoreUnknown]) { _, offset, type in
             if let type = type as? any StateObjectProperty.Type {
@@ -33,6 +35,10 @@ struct UIInputEnvironmentTypeInfo {
                 var typeName = _typeName(type)
                 typeName.trimPrefix("(extension in PiedPiperFoundationUI):__C.UIView.")
                 configurationObjectProperties_.append(ConfigurationObjectPropertyInfo(offset: offset, typeName: typeName, type: type))
+            } else if let type = type as? any ObservedObjectProperty.Type {
+                var typeName = _typeName(type)
+                typeName.trimPrefix("(extension in PiedPiperFoundationUI):__C.UIView.")
+                observedObjectProperties_.append(ObservedObjectPropertyInfo(offset: offset, typeName: typeName, type: type))
             }
             return true
         }
@@ -40,6 +46,8 @@ struct UIInputEnvironmentTypeInfo {
         stateObjectProperties = consume stateObjectProperties_
         
         configurationObjectProperties = consume configurationObjectProperties_
+        
+        observedObjectProperties = consume observedObjectProperties_
     }
 }
 
@@ -59,4 +67,13 @@ struct ConfigurationObjectPropertyInfo {
     let typeName: String
     
     let type: any ConfigurationObjectProperty.Type
+}
+
+struct ObservedObjectPropertyInfo {
+    
+    let offset: Int
+    
+    let typeName: String
+    
+    let type: any ObservedObjectProperty.Type
 }

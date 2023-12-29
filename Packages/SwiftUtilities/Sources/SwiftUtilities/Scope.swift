@@ -7,20 +7,19 @@
 
 @inlinable
 @discardableResult
-public func with<T>(_ receiver: consuming T, apply: (inout T) throws -> Void) rethrows -> T {
-	try apply(&receiver)
-	return receiver
+public func with<T>(_ receiver: consuming T, _ apply: (inout T) throws -> Void) rethrows -> T {
+    try apply(&receiver)
+    return receiver
 }
 
 @inlinable
 @discardableResult
-public func with<T, V>(_ receiver: consuming T, apply: (inout T) throws -> V) rethrows -> V {
+public func with<T, V>(_ receiver: consuming T, _ apply: (inout T) throws -> V) rethrows -> V {
     return try apply(&receiver)
 }
 
-//@inlinable
-//@discardableResult
-//public func with<T>(_ receiver: inout T, apply: (inout T) throws -> Void) rethrows -> T {
-//	try apply(&receiver)
-//	return receiver
-//}
+@inlinable
+@discardableResult
+public func with<T>(_ apply: () throws -> T) rethrows -> T {
+    try apply()
+}

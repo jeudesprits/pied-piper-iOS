@@ -157,7 +157,7 @@ extension GradientView {
             super.init()
         }
         
-        internal override borrowing func copy() -> Self {
+        internal override func copy() -> Self {
             State(copy: self) as! Self
         }
         
@@ -185,7 +185,7 @@ extension GradientView {
             super.init()
         }
         
-        public override borrowing func copy() -> Self {
+        public override func copy() -> Self {
             Configuration(copy: self) as! Self
         }
         
@@ -199,29 +199,29 @@ extension GradientView {
 extension GradientView.Configuration {
     
     @_disfavoredOverload
-    public static func linear(gradient: consuming Gradient, startPoint: consuming UIUnitPoint, endPoint: consuming UIUnitPoint) -> GradientView.Configuration {
+    public static func linear(gradient: Gradient, startPoint: UIUnitPoint, endPoint: UIUnitPoint) -> GradientView.Configuration {
         GradientView.LinearConfiguration(gradient: gradient, startPoint: startPoint, endPoint: endPoint)
     }
     
     @_disfavoredOverload
-    public static func linear(stops: consuming [Gradient.Stop], startPoint: consuming UIUnitPoint, endPoint: consuming UIUnitPoint) -> GradientView.Configuration {
+    public static func linear(stops: [Gradient.Stop], startPoint: UIUnitPoint, endPoint: UIUnitPoint) -> GradientView.Configuration {
         GradientView.LinearConfiguration(gradient: Gradient(stops: stops), startPoint: startPoint, endPoint: endPoint)
     }
     
     @_disfavoredOverload
-    public static func linear(colors: borrowing [UIColor], startPoint: consuming UIUnitPoint, endPoint: consuming UIUnitPoint) -> GradientView.Configuration {
+    public static func linear(colors: [UIColor], startPoint: UIUnitPoint, endPoint: UIUnitPoint) -> GradientView.Configuration {
         GradientView.LinearConfiguration(gradient: Gradient(colors: colors), startPoint: startPoint, endPoint: endPoint)
     }
     
-    public static func linear(gradient: consuming Gradient, directionalStartPoint: consuming NSDirectionalUnitPoint, directionalEndPoint: consuming NSDirectionalUnitPoint) -> GradientView.Configuration {
+    public static func linear(gradient: Gradient, directionalStartPoint: NSDirectionalUnitPoint, directionalEndPoint: NSDirectionalUnitPoint) -> GradientView.Configuration {
         GradientView.LinearConfiguration(gradient: gradient, directionalStartPoint: directionalStartPoint, directionalEndPoint: directionalEndPoint)
     }
     
-    public static func linear(stops: consuming [Gradient.Stop], directionalStartPoint: consuming NSDirectionalUnitPoint, directionalEndPoint: consuming NSDirectionalUnitPoint) -> GradientView.Configuration {
+    public static func linear(stops: [Gradient.Stop], directionalStartPoint: NSDirectionalUnitPoint, directionalEndPoint: NSDirectionalUnitPoint) -> GradientView.Configuration {
         GradientView.LinearConfiguration(gradient: Gradient(stops: stops), directionalStartPoint: directionalStartPoint, directionalEndPoint: directionalEndPoint)
     }
     
-    public static func linear(colors: borrowing [UIColor], directionalStartPoint: consuming NSDirectionalUnitPoint, directionalEndPoint: consuming NSDirectionalUnitPoint) -> GradientView.Configuration {
+    public static func linear(colors: [UIColor], directionalStartPoint: NSDirectionalUnitPoint, directionalEndPoint: NSDirectionalUnitPoint) -> GradientView.Configuration {
         GradientView.LinearConfiguration(gradient: Gradient(colors: colors), directionalStartPoint: directionalStartPoint, directionalEndPoint: directionalEndPoint)
     }
 }
@@ -229,56 +229,56 @@ extension GradientView.Configuration {
 extension GradientView.Configuration {
     
     @_disfavoredOverload
-    public static func angular(gradient: consuming Gradient, center: consuming UIUnitPoint = .center, angle: consuming UIAngle = .zero) -> GradientView.Configuration {
+    public static func angular(gradient: Gradient, center: UIUnitPoint = .center, angle: UIAngle = .zero) -> GradientView.Configuration {
         angular(gradient: gradient, center: center, startAngle: angle, endAngle: copy angle)
     }
     
     @_disfavoredOverload
-    public static func angular(stops: consuming [Gradient.Stop], center: consuming UIUnitPoint = .center, angle: consuming UIAngle = .zero) -> GradientView.Configuration {
+    public static func angular(stops: [Gradient.Stop], center: UIUnitPoint = .center, angle: UIAngle = .zero) -> GradientView.Configuration {
         angular(stops: stops, center: center, startAngle: angle, endAngle: copy angle)
     }
     
     @_disfavoredOverload
-    public static func angular(colors: borrowing [UIColor], center: consuming UIUnitPoint = .center, angle: consuming UIAngle = .zero) -> GradientView.Configuration {
+    public static func angular(colors: [UIColor], center: UIUnitPoint = .center, angle: UIAngle = .zero) -> GradientView.Configuration {
         angular(colors: colors, center: center, startAngle: angle, endAngle: copy angle)
     }
     
-    public static func angular(gradient: consuming Gradient, directionalCenter: consuming NSDirectionalUnitPoint = .center, angle: consuming UIAngle = .zero) -> GradientView.Configuration {
+    public static func angular(gradient: Gradient, directionalCenter: NSDirectionalUnitPoint = .center, angle: UIAngle = .zero) -> GradientView.Configuration {
         angular(gradient: gradient, directionalCenter: directionalCenter, startAngle: angle, endAngle: copy angle)
     }
     
-    public static func angular(stops: consuming [Gradient.Stop], directionalCenter: consuming NSDirectionalUnitPoint = .center, angle: consuming UIAngle = .zero) -> GradientView.Configuration {
+    public static func angular(stops: [Gradient.Stop], directionalCenter: NSDirectionalUnitPoint = .center, angle: UIAngle = .zero) -> GradientView.Configuration {
         angular(stops: stops, directionalCenter: directionalCenter, startAngle: angle, endAngle: copy angle)
     }
     
-    public static func angular(colors: borrowing [UIColor], directionalCenter: consuming NSDirectionalUnitPoint = .center, angle: consuming UIAngle = .zero) -> GradientView.Configuration {
+    public static func angular(colors: [UIColor], directionalCenter: NSDirectionalUnitPoint = .center, angle: UIAngle = .zero) -> GradientView.Configuration {
         angular(colors: colors, directionalCenter: directionalCenter, startAngle: angle, endAngle: copy angle)
     }
     
     @_disfavoredOverload
-    public static func angular(gradient: consuming Gradient, center: consuming UIUnitPoint = .center, startAngle: consuming UIAngle, endAngle: consuming UIAngle) -> GradientView.Configuration {
+    public static func angular(gradient: Gradient, center: UIUnitPoint = .center, startAngle: UIAngle, endAngle: UIAngle) -> GradientView.Configuration {
         GradientView.AngularConfiguration(gradient: gradient, center: center, startAngle: startAngle, endAngle: endAngle)
     }
     
     @_disfavoredOverload
-    public static func angular(stops: consuming [Gradient.Stop], center: consuming UIUnitPoint = .center, startAngle: consuming UIAngle, endAngle: consuming UIAngle) -> GradientView.Configuration {
+    public static func angular(stops: [Gradient.Stop], center: UIUnitPoint = .center, startAngle: UIAngle, endAngle: UIAngle) -> GradientView.Configuration {
         GradientView.AngularConfiguration(gradient: Gradient(stops: stops), center: center, startAngle: startAngle, endAngle: endAngle)
     }
     
     @_disfavoredOverload
-    public static func angular(colors: borrowing [UIColor], center: consuming UIUnitPoint = .center, startAngle: consuming UIAngle, endAngle: consuming UIAngle) -> GradientView.Configuration {
+    public static func angular(colors: [UIColor], center: UIUnitPoint = .center, startAngle: UIAngle, endAngle: UIAngle) -> GradientView.Configuration {
         GradientView.AngularConfiguration(gradient: Gradient(colors: colors), center: center, startAngle: startAngle, endAngle: endAngle)
     }
     
-    public static func angular(gradient: consuming Gradient, directionalCenter: consuming NSDirectionalUnitPoint = .center, startAngle: consuming UIAngle, endAngle: consuming UIAngle) -> GradientView.Configuration {
+    public static func angular(gradient: Gradient, directionalCenter: NSDirectionalUnitPoint = .center, startAngle: UIAngle, endAngle: UIAngle) -> GradientView.Configuration {
         GradientView.AngularConfiguration(gradient: gradient, directionalCenter: directionalCenter, startAngle: startAngle, endAngle: endAngle)
     }
     
-    public static func angular(stops: consuming [Gradient.Stop], directionalCenter: consuming NSDirectionalUnitPoint = .center, startAngle: consuming UIAngle, endAngle: consuming UIAngle) -> GradientView.Configuration {
+    public static func angular(stops: [Gradient.Stop], directionalCenter: NSDirectionalUnitPoint = .center, startAngle: UIAngle, endAngle: UIAngle) -> GradientView.Configuration {
         GradientView.AngularConfiguration(gradient: Gradient(stops: stops), directionalCenter: directionalCenter, startAngle: startAngle, endAngle: endAngle)
     }
     
-    public static func angular(colors: borrowing [UIColor], directionalCenter: consuming NSDirectionalUnitPoint = .center, startAngle: consuming UIAngle, endAngle: consuming UIAngle) -> GradientView.Configuration {
+    public static func angular(colors: [UIColor], directionalCenter: NSDirectionalUnitPoint = .center, startAngle: UIAngle, endAngle: UIAngle) -> GradientView.Configuration {
         GradientView.AngularConfiguration(gradient: Gradient(colors: colors), directionalCenter: directionalCenter, startAngle: startAngle, endAngle: endAngle)
     }
 }
@@ -286,29 +286,29 @@ extension GradientView.Configuration {
 extension GradientView.Configuration {
     
     @_disfavoredOverload
-    public static func conic(gradient: consuming Gradient, center: consuming UIUnitPoint = .center, angle: consuming UIAngle = .zero) -> GradientView.Configuration {
+    public static func conic(gradient: Gradient, center: UIUnitPoint = .center, angle: UIAngle = .zero) -> GradientView.Configuration {
         GradientView.ConicConfiguration(gradient: gradient, center: center, angle: angle)
     }
     
     @_disfavoredOverload
-    public static func conic(stops: consuming [Gradient.Stop], center: consuming UIUnitPoint = .center, angle: consuming UIAngle = .zero) -> GradientView.Configuration {
+    public static func conic(stops: [Gradient.Stop], center: UIUnitPoint = .center, angle: UIAngle = .zero) -> GradientView.Configuration {
         GradientView.ConicConfiguration(gradient: Gradient(stops: stops), center: center, angle: angle)
     }
     
     @_disfavoredOverload
-    public static func conic(colors: borrowing [UIColor], center: consuming UIUnitPoint = .center, angle: consuming UIAngle = .zero) -> GradientView.Configuration {
+    public static func conic(colors: [UIColor], center: UIUnitPoint = .center, angle: UIAngle = .zero) -> GradientView.Configuration {
         GradientView.ConicConfiguration(gradient: Gradient(colors: colors), center: center, angle: angle)
     }
     
-    public static func conic(gradient: consuming Gradient, directionalCenter: consuming NSDirectionalUnitPoint = .center, angle: consuming UIAngle = .zero) -> GradientView.Configuration  {
+    public static func conic(gradient: Gradient, directionalCenter: NSDirectionalUnitPoint = .center, angle: UIAngle = .zero) -> GradientView.Configuration  {
         GradientView.ConicConfiguration(gradient: gradient, directionalCenter: directionalCenter, angle: angle)
     }
     
-    public static func conic(stops: consuming [Gradient.Stop], directionalCenter: consuming NSDirectionalUnitPoint = .center, angle: consuming UIAngle = .zero) -> GradientView.Configuration {
+    public static func conic(stops: [Gradient.Stop], directionalCenter: NSDirectionalUnitPoint = .center, angle: UIAngle = .zero) -> GradientView.Configuration {
         GradientView.ConicConfiguration(gradient: Gradient(stops: stops), directionalCenter: directionalCenter, angle: angle)
     }
     
-    public static func conic(colors: borrowing [UIColor], directionalCenter: consuming NSDirectionalUnitPoint = .center, angle: consuming UIAngle = .zero) -> GradientView.Configuration {
+    public static func conic(colors: [UIColor], directionalCenter: NSDirectionalUnitPoint = .center, angle: UIAngle = .zero) -> GradientView.Configuration {
         GradientView.ConicConfiguration(gradient: Gradient(colors: colors), directionalCenter: directionalCenter, angle: angle)
     }
 }
@@ -316,29 +316,29 @@ extension GradientView.Configuration {
 extension GradientView.Configuration {
     
     @_disfavoredOverload
-    public static func elliptical(gradient: consuming Gradient, center: consuming UIUnitPoint = .center, startRadiusFraction: consuming CGFloat = 0.0, endRadiusFraction: consuming CGFloat = 0.5) -> GradientView.Configuration {
+    public static func elliptical(gradient: Gradient, center: UIUnitPoint = .center, startRadiusFraction: CGFloat = 0.0, endRadiusFraction: CGFloat = 0.5) -> GradientView.Configuration {
         GradientView.EllipticalConfiguration(gradient: gradient, center: center, startRadiusFraction: startRadiusFraction, endRadiusFraction: endRadiusFraction)
     }
     
     @_disfavoredOverload
-    public static func elliptical(stops: consuming [Gradient.Stop], center: consuming UIUnitPoint = .center, startRadiusFraction: consuming CGFloat = 0.0, endRadiusFraction: consuming CGFloat = 0.5) -> GradientView.Configuration {
+    public static func elliptical(stops: [Gradient.Stop], center: UIUnitPoint = .center, startRadiusFraction: CGFloat = 0.0, endRadiusFraction: CGFloat = 0.5) -> GradientView.Configuration {
         GradientView.EllipticalConfiguration(gradient: Gradient(stops: stops), center: center, startRadiusFraction: startRadiusFraction, endRadiusFraction: endRadiusFraction)
     }
     
     @_disfavoredOverload
-    public static func elliptical(colors: borrowing [UIColor], center: consuming UIUnitPoint = .center, startRadiusFraction: consuming CGFloat = 0.0, endRadiusFraction: consuming CGFloat = 0.5) -> GradientView.Configuration {
+    public static func elliptical(colors: [UIColor], center: UIUnitPoint = .center, startRadiusFraction: CGFloat = 0.0, endRadiusFraction: CGFloat = 0.5) -> GradientView.Configuration {
         GradientView.EllipticalConfiguration(gradient: Gradient(colors: colors), center: center, startRadiusFraction: startRadiusFraction, endRadiusFraction: endRadiusFraction)
     }
     
-    public static func elliptical(gradient: consuming Gradient, directionalCenter: consuming NSDirectionalUnitPoint = .center, startRadiusFraction: consuming CGFloat = 0.0, endRadiusFraction: consuming CGFloat = 0.5) -> GradientView.Configuration {
+    public static func elliptical(gradient: Gradient, directionalCenter: NSDirectionalUnitPoint = .center, startRadiusFraction: CGFloat = 0.0, endRadiusFraction: CGFloat = 0.5) -> GradientView.Configuration {
         GradientView.EllipticalConfiguration(gradient: gradient, directionalCenter: directionalCenter, startRadiusFraction: startRadiusFraction, endRadiusFraction: endRadiusFraction)
     }
     
-    public static func elliptical(stops: consuming [Gradient.Stop], directionalCenter: consuming NSDirectionalUnitPoint = .center, startRadiusFraction: consuming CGFloat = 0.0, endRadiusFraction: consuming CGFloat = 0.5) -> GradientView.Configuration {
+    public static func elliptical(stops: [Gradient.Stop], directionalCenter: NSDirectionalUnitPoint = .center, startRadiusFraction: CGFloat = 0.0, endRadiusFraction: CGFloat = 0.5) -> GradientView.Configuration {
         GradientView.EllipticalConfiguration(gradient: Gradient(stops: stops), directionalCenter: directionalCenter, startRadiusFraction: startRadiusFraction, endRadiusFraction: endRadiusFraction)
     }
     
-    public static func elliptical(colors: borrowing [UIColor], directionalCenter: consuming NSDirectionalUnitPoint = .center, startRadiusFraction: consuming CGFloat = 0.0, endRadiusFraction: consuming CGFloat = 0.5) -> GradientView.Configuration {
+    public static func elliptical(colors: [UIColor], directionalCenter: NSDirectionalUnitPoint = .center, startRadiusFraction: CGFloat = 0.0, endRadiusFraction: CGFloat = 0.5) -> GradientView.Configuration {
         GradientView.EllipticalConfiguration(gradient: Gradient(colors: colors), directionalCenter: directionalCenter, startRadiusFraction: startRadiusFraction, endRadiusFraction: endRadiusFraction)
     }
 }
@@ -346,29 +346,29 @@ extension GradientView.Configuration {
 extension GradientView.Configuration {
     
     @_disfavoredOverload
-    public static func radial(gradient: consuming Gradient, center: consuming UIUnitPoint = .center, startRadiusFraction: consuming CGFloat = 0.0, endRadiusFraction: consuming CGFloat = 0.5) -> GradientView.Configuration {
+    public static func radial(gradient: Gradient, center: UIUnitPoint = .center, startRadiusFraction: CGFloat = 0.0, endRadiusFraction: CGFloat = 0.5) -> GradientView.Configuration {
         GradientView.RadialConfiguration(gradient: gradient, center: center, startRadiusFraction: startRadiusFraction, endRadiusFraction: endRadiusFraction)
     }
     
     @_disfavoredOverload
-    public static func radial(stops: consuming [Gradient.Stop], center: consuming UIUnitPoint = .center, startRadiusFraction: consuming CGFloat = 0.0, endRadiusFraction: consuming CGFloat = 0.5) -> GradientView.Configuration {
+    public static func radial(stops: [Gradient.Stop], center: UIUnitPoint = .center, startRadiusFraction: CGFloat = 0.0, endRadiusFraction: CGFloat = 0.5) -> GradientView.Configuration {
         GradientView.RadialConfiguration(gradient: Gradient(stops: stops), center: center, startRadiusFraction: startRadiusFraction, endRadiusFraction: endRadiusFraction)
     }
     
     @_disfavoredOverload
-    public static func radial(colors: borrowing [UIColor], center: consuming UIUnitPoint = .center, startRadiusFraction: consuming CGFloat = 0.0, endRadiusFraction: consuming CGFloat = 0.5) -> GradientView.Configuration {
+    public static func radial(colors: [UIColor], center: UIUnitPoint = .center, startRadiusFraction: CGFloat = 0.0, endRadiusFraction: CGFloat = 0.5) -> GradientView.Configuration {
         GradientView.RadialConfiguration(gradient: Gradient(colors: colors), center: center, startRadiusFraction: startRadiusFraction, endRadiusFraction: endRadiusFraction)
     }
     
-    public static func radial(gradient: consuming Gradient, directionalCenter: consuming NSDirectionalUnitPoint = .center, startRadiusFraction: consuming CGFloat = 0.0, endRadiusFraction: consuming CGFloat = 0.5) -> GradientView.Configuration {
+    public static func radial(gradient: Gradient, directionalCenter: NSDirectionalUnitPoint = .center, startRadiusFraction: CGFloat = 0.0, endRadiusFraction: CGFloat = 0.5) -> GradientView.Configuration {
         GradientView.RadialConfiguration(gradient: gradient, directionalCenter: directionalCenter, startRadiusFraction: startRadiusFraction, endRadiusFraction: endRadiusFraction)
     }
     
-    public static func radial(stops: consuming [Gradient.Stop], directionalCenter: consuming NSDirectionalUnitPoint = .center, startRadiusFraction: consuming CGFloat = 0.0, endRadiusFraction: consuming CGFloat = 0.5) -> GradientView.Configuration {
+    public static func radial(stops: [Gradient.Stop], directionalCenter: NSDirectionalUnitPoint = .center, startRadiusFraction: CGFloat = 0.0, endRadiusFraction: CGFloat = 0.5) -> GradientView.Configuration {
         GradientView.RadialConfiguration(gradient: Gradient(stops: stops), directionalCenter: directionalCenter, startRadiusFraction: startRadiusFraction, endRadiusFraction: endRadiusFraction)
     }
     
-    public static func radial(colors: borrowing [UIColor], directionalCenter: consuming NSDirectionalUnitPoint = .center, startRadiusFraction: consuming CGFloat = 0.0, endRadiusFraction: consuming CGFloat = 0.5) -> GradientView.Configuration {
+    public static func radial(colors: [UIColor], directionalCenter: NSDirectionalUnitPoint = .center, startRadiusFraction: CGFloat = 0.0, endRadiusFraction: CGFloat = 0.5) -> GradientView.Configuration {
         GradientView.RadialConfiguration(gradient: Gradient(colors: colors), directionalCenter: directionalCenter, startRadiusFraction: startRadiusFraction, endRadiusFraction: endRadiusFraction)
     }
 }
@@ -432,7 +432,7 @@ extension GradientView {
             super.init(gradient: gradient)
         }
         
-        internal override borrowing func copy() -> Self {
+        internal override func copy() -> Self {
             LinearConfiguration(copy: self) as! Self
         }
         
@@ -534,7 +534,7 @@ extension GradientView {
             super.init(gradient: gradient)
         }
         
-        internal override borrowing func copy() -> Self {
+        internal override func copy() -> Self {
             AngularConfiguration(copy: self) as! Self
         }
         
@@ -604,7 +604,7 @@ extension GradientView {
             super.init(gradient: gradient)
         }
         
-        internal override borrowing func copy() -> Self {
+        internal override func copy() -> Self {
             ConicConfiguration(copy: self) as! Self
         }
         
@@ -679,7 +679,7 @@ extension GradientView {
             super.init(gradient: gradient)
         }
         
-        internal override borrowing func copy() -> Self {
+        internal override func copy() -> Self {
             EllipticalConfiguration(copy: self) as! Self
         }
         
@@ -755,7 +755,7 @@ extension GradientView {
             super.init(gradient: gradient)
         }
         
-        internal override borrowing func copy() -> Self {
+        internal override func copy() -> Self {
             RadialConfiguration(copy: self) as! Self
         }
         

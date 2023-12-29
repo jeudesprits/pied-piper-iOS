@@ -144,12 +144,17 @@ extension UIInputChangesSystem {
         
         func visit(stateObjectPropertyOf type: (some StateObjectProperty).Type, with propertyInfo: StateObjectPropertyInfo) {
             let propertyPointer = environmentPointer.advanced(by: propertyInfo.offset).assumingMemoryBound(to: type)
+            
+            let propertyIdentifier = propertyPointer.pointee.id
+            currentContext.pendingChangesIdentifiers.insert(propertyIdentifier)
+            
             propertyPointer.pointee.willChangeHandler = { [unowned(unsafe) self] in
-                let propertyIdentifier = propertyPointer.pointee.id
+                guard !UIView.performingWithoutInputsChanges else { return }
+                
                 let isPendingChangesIdentifier = currentContext?.pendingChangesIdentifiers.contains(propertyIdentifier) ?? false
-                                
+                
                 guard !isPendingChangesIdentifier else { return }
-                                
+                
                 let previousValue = propertyPointer.pointee.value.copy()
                 propertyPointer.pointee.previousValue = consume previousValue
                 
@@ -171,8 +176,13 @@ extension UIInputChangesSystem {
         
         func visit(configurationObjectPropertyOf type: (some ConfigurationObjectProperty).Type, with propertyInfo: ConfigurationObjectPropertyInfo) {
             let propertyPointer = environmentPointer.advanced(by: propertyInfo.offset).assumingMemoryBound(to: type)
+            
+            let propertyIdentifier = propertyPointer.pointee.id
+            currentContext.pendingChangesIdentifiers.insert(propertyIdentifier)
+            
             propertyPointer.pointee.willChangeHandler = { [unowned(unsafe) self] in
-                let propertyIdentifier = propertyPointer.pointee.id
+                guard !UIView.performingWithoutInputsChanges else { return }
+                
                 let isPendingChangesIdentifier = currentContext?.pendingChangesIdentifiers.contains(propertyIdentifier) ?? false
                 
                 guard !isPendingChangesIdentifier else { return }
@@ -196,6 +206,44 @@ extension UIInputChangesSystem {
             }
         }
         
+        func visit(observedObjectPropertyOf type: (some ObservedObjectProperty).Type, with propertyInfo: ObservedObjectPropertyInfo) {
+            let propertyPointer = environmentPointer.advanced(by: propertyInfo.offset).assumingMemoryBound(to: type)
+            let propertyIdentifier = propertyPointer.pointee.id
+            
+            propertyPointer.pointee.willChangeHandler = {
+                propertyPointer.pointee.previousValue = propertyPointer.pointee.value?.copy()
+                
+                OSLogger.uiinput.debug(
+                    """
+                    [environment=\(self.environmentTypeInfo.name, privacy: .public), \
+                    environmentID=\(self.environmentID.debugDescription, privacy: .public), \
+                    observedObject=\(propertyInfo.typeName, privacy: .public), \
+                    observedObjectID=\(propertyIdentifier, privacy: .public)] \
+                    Observed object pending changes
+                    """
+                )
+            }
+            
+            propertyPointer.pointee.didChangeHandler = {
+                OSLogger.uiinput.debug(
+                    """
+                    [environment=\(self.environmentTypeInfo.name, privacy: .public), \
+                    environmentID=\(self.environmentID.debugDescription, privacy: .public), \
+                    observedObject=\(propertyInfo.typeName, privacy: .public), \
+                    observedObjectID=\(propertyIdentifier, privacy: .public)] \
+                    Performing Observed objects changes...
+                    """
+                )
+                
+                let previousValue = propertyPointer.pointee.previousValue
+                for changesHandler in propertyPointer.pointee.registeredChangesHandlers.values {
+                    changesHandler(previousValue)
+                }
+            }
+        }
+        
+        startDeferringChangesIfNeeded()
+        
         for propertyInfo in environmentTypeInfo.stateObjectProperties {
             let type = propertyInfo.type
             visit(stateObjectPropertyOf: type, with: propertyInfo)
@@ -206,8 +254,10 @@ extension UIInputChangesSystem {
             visit(configurationObjectPropertyOf: type, with: propertyInfo)
         }
         
-        startDeferringChangesIfNeeded()
-        currentContext?.needsChanges = true
+        for propertyInfo in environmentTypeInfo.observedObjectProperties {
+            let type = propertyInfo.type
+            visit(observedObjectPropertyOf: type, with: propertyInfo)
+        }
     }
 }
 
@@ -292,8 +342,9 @@ extension UIInputChangesSystem {
             context.isAnimated = currentContext.needsAnimatedChanges || currentContext.needsAnimatedChangesIdentifiers.contains(propertyIdentifier)
             currentContext.pendingChangesContexts[propertyIdentifier] = context
             
+            let previousValue = propertyPointer.pointee.previousValue
             for changesHandler in propertyPointer.pointee.registeredChangesHandlers.values {
-                changesHandler(propertyPointer.pointee.previousValue, context)
+                changesHandler(previousValue, context)
             }
         }
         
@@ -326,8 +377,9 @@ extension UIInputChangesSystem {
             context.isAnimated = currentContext.needsAnimatedChanges || currentContext.needsAnimatedChangesIdentifiers.contains(propertyIdentifier)
             currentContext.pendingChangesContexts[propertyIdentifier] = context
             
+            let previousValue = propertyPointer.pointee.previousValue
             for changesHandler in propertyPointer.pointee.registeredChangesHandlers.values {
-                changesHandler(propertyPointer.pointee.previousValue, context)
+                changesHandler(previousValue, context)
             }
         }
         

@@ -7,7 +7,7 @@
 
 import SwiftUtilities
 
-open class UIInput: Copyable, ObservableProperty {
+open class UIInput: Copyable, ObservableInputProperty {
     
     final let typeInfo: UIInputTypeInfo
     
@@ -16,6 +16,12 @@ open class UIInput: Copyable, ObservableProperty {
     
     @usableFromInline
     final var willChangeHandler: WillChangeHandler = {}
+    
+    @usableFromInline
+    typealias DidChangeHandler = () -> Void
+    
+    @usableFromInline
+    final var didChangeHandler: DidChangeHandler = {}
     
     init() {
         typeInfo = UIInputTypeInfo(of: Self.self)

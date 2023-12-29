@@ -14,8 +14,12 @@ extension UIView {
     public struct StateObject<State: UIState>: StateObjectProperty {
         
         @usableFromInline
+        typealias Input = State
+        
+        @usableFromInline
         let id: UUID
         
+        @usableFromInline
         var previousValue: State?
         
         @usableFromInline
@@ -31,8 +35,10 @@ extension UIView {
             }
         }
         
+        @usableFromInline
         typealias ChangesHandler = (_ previousState: State?, _ context: UIInputChangesContext) -> Void
         
+        @usableFromInline
         var registeredChangesHandlers: OrderedDictionary<UIInputChangesRegistration, ChangesHandler> = [:]
         
         @available(*, unavailable, message: "'@StateObject' attribute is class constrained that conforms 'UIInputEnvironment' protocol. Use it with properties of that classes, not with other classes or non-class types like struct")

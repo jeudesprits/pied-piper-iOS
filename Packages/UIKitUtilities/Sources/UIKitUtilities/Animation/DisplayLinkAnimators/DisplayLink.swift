@@ -7,7 +7,6 @@
 
 import UIKit
 
-///
 public class DisplayLink {
 	
 	private var rawDisplayLink: CADisplayLink!
@@ -30,12 +29,14 @@ public class DisplayLink {
 		rawDisplayLink?.isPaused ?? false
 	}
 	
-	internal func _start() {
+	internal final func _start() {
 		switch state {
 		case .inactive:
-			rawDisplayLink = .init(target: self, selector: #selector(heartbit(_:)))
+			rawDisplayLink = CADisplayLink(target: self, selector: #selector(heartbit(_:)))
 			rawDisplayLink.preferredFrameRateRange = preferredFrameRateRange
-			rawDisplayLink.add(to: .main, forMode: mode)
+            DispatchQueue.main.async { [self] in
+                rawDisplayLink.add(to: .main, forMode: mode)
+            }
 			state = .active
 			
 		case .active where isPaused:
@@ -46,14 +47,14 @@ public class DisplayLink {
 		}
 	}
 	
-	internal func _stop() {
+	internal final func _stop() {
 		assert(state != .stopped)
 		state = .stopped
 		rawDisplayLink?.invalidate()
 		rawDisplayLink = nil
 	}
 	
-	internal func _pause() {
+	internal final func _pause() {
 		assert(state == .active)
 		rawDisplayLink.isPaused = true
 	}

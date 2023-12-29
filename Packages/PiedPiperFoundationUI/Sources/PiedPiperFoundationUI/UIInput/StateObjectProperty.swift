@@ -5,7 +5,7 @@
 //  Created by Ruslan Lutfullin on 14/12/23.
 //
 
-protocol StateObjectProperty: InputObjectProperty {
+protocol StateObjectProperty: DeferredChangesInputObjectProperty where Input: UIState {
     
     var previousValue: Input? { get set }
     

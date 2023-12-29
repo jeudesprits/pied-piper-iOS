@@ -38,8 +38,11 @@ extension UIInput {
                 let oldValue = enclosingSelf[keyPath: storageKeyPath].value
                 if oldValue != newValue {
                     enclosingSelf.willChangeHandler()
+                    enclosingSelf[keyPath: storageKeyPath].value = newValue
+                    enclosingSelf.didChangeHandler()
+                } else {
+                    enclosingSelf[keyPath: storageKeyPath].value = newValue
                 }
-                enclosingSelf[keyPath: storageKeyPath].value = newValue
             }
         }
         
