@@ -32,34 +32,71 @@ final class CategorySegmentedControl: Control {
     
     private var currentAnimator: UIViewPropertyAnimator?
     
-    private(set) var hasActiveInteractiveTransition = false
+    private(set) var hasActiveInteractiveAnimation = false
     
-    func startInteractiveTransition(toSelectedIndex selectedIndex: Int) {
-        guard !hasActiveInteractiveTransition else { return }
-        hasActiveInteractiveTransition = true
+    func startInteractiveAnimation(toSelectedIndex selectedIndex: Int) {
+        guard !hasActiveInteractiveAnimation, state.selectedIndex != selectedIndex else { return }
+        hasActiveInteractiveAnimation = true
+        assert(currentAnimator == nil)
+        let previousSelectedIndex = state.selectedIndex
         state.selectedIndex = selectedIndex
         setNeedsAnimatedInputsChanges()
         changesInputsIfNeeded()
-        currentAnimator?.pauseAnimation()
+        assert(currentAnimator != nil)
+        currentAnimator!.pauseAnimation()
+        for segmentView in segmentsView {
+            segmentView.currentAnimator?.pauseAnimation()
+        }
+        currentAnimator!.addCompletion { [unowned self] in
+            hasActiveInteractiveAnimation = false
+            guard $0 == .start else { return }
+            state.selectedIndex = previousSelectedIndex
+            changesInputsIfNeeded()
+        }
     }
     
-    func updateInteractiveTransition(_ percentComplete: CGFloat) {
-        currentAnimator?.fractionComplete = percentComplete
+    func updateInteractiveAnimation(_ percentComplete: CGFloat) {
+        guard hasActiveInteractiveAnimation else { return }
+        assert(currentAnimator != nil)
+        currentAnimator!.fractionComplete = percentComplete
+        for segmentView in segmentsView {
+            segmentView.currentAnimator?.fractionComplete = percentComplete
+        }
     }
     
-    func pauseInteractiveTransition() {
-        currentAnimator?.pauseAnimation()
+    func pauseInteractiveAnimation() {
+        guard hasActiveInteractiveAnimation else { return }
+        assert(currentAnimator != nil)
+        currentAnimator!.pauseAnimation()
+        for segmentView in segmentsView {
+            segmentView.currentAnimator?.pauseAnimation()
+        }
     }
     
-    func finishInteractiveTransition() {
-        hasActiveInteractiveTransition = false
-        currentAnimator?.startAnimation()
+    func finishInteractiveAnimation() {
+        guard hasActiveInteractiveAnimation else { return }
+        assert(currentAnimator != nil)
+        currentAnimator!.fractionComplete = 1.0
+        currentAnimator!.stopAnimation(false)
+        currentAnimator!.finishAnimation(at: .end)
+        for segmentView in segmentsView {
+            segmentView.currentAnimator?.fractionComplete = 1.0
+            segmentView.currentAnimator?.stopAnimation(false)
+            segmentView.currentAnimator?.finishAnimation(at: .end)
+        }
     }
     
-    func cancelInteractiveTransition() {
-        hasActiveInteractiveTransition = false
-        currentAnimator?.isReversed = true
-        currentAnimator?.startAnimation()
+    func cancelInteractiveAnimation() {
+        guard hasActiveInteractiveAnimation else { return }
+        assert(currentAnimator != nil)
+        currentAnimator!.fractionComplete = 0.0
+        currentAnimator!.stopAnimation(false)
+        currentAnimator!.finishAnimation(at: .start)
+        for segmentView in segmentsView {
+            segmentView.currentAnimator?.fractionComplete = 0.0
+            segmentView.currentAnimator?.stopAnimation(false)
+            segmentView.currentAnimator?.finishAnimation(at: .start)
+        }
     }
     
     private var segmentsBottomConstraint: [NSLayoutConstraint] = []
@@ -173,6 +210,7 @@ extension CategorySegmentedControl {
             for (index, segmentView) in segmentsView.indexed() {
                 segmentView.state.isSelected = index == state.selectedIndex
                 segmentView.setNeedsAnimatedInputsChanges()
+                segmentView.changesInputsIfNeeded()
             }
             
             flags.updatingConstraintsAsPartOfApplyState = true
@@ -181,11 +219,6 @@ extension CategorySegmentedControl {
             setNeedsLayout()
             
             currentAnimator = UIViewPropertyAnimator.runningPropertyAnimator(animation: .default1Spring) { [unowned self] in
-                for segmentView in segmentsView {
-                    segmentView.setNeedsAnimatedInputsChanges()
-                    segmentView.changesInputsIfNeeded()
-                }
-                
                 layoutIfNeeded()
                 
                 let contentOffsetX = if let selectedIndex = state.selectedIndex {
@@ -194,15 +227,15 @@ extension CategorySegmentedControl {
                     scrollView.startContentOffset.x
                 }
                 scrollView.contentOffset = CGPoint(x: contentOffsetX, y: 0.0)
-            } completion: { [unowned self] in
+            } completion: { [unowned self] _ in
                 currentAnimator = nil
-                guard $0 == .start, let previousState else { return }
-                state = previousState
-                changesInputsIfNeeded()
             }
         } else {
             for (index, segmentView) in segmentsView.indexed() {
                 segmentView.state.isSelected = index == state.selectedIndex
+                if !context.isDeferred {
+                    segmentView.changesInputsIfNeeded()
+                }
             }
             
             flags.updatingConstraintsAsPartOfApplyState = true
@@ -210,7 +243,20 @@ extension CategorySegmentedControl {
             
             setNeedsLayout()
             
-            AfterCACommitTransaction { [self] in
+            if context.isDeferred {
+                AfterCACommitTransaction { [self] in
+                    let contentOffsetX = if let selectedIndex = state.selectedIndex {
+                        scrollView.startContentOffset.x + ((scrollView.endContentOffset.x -  scrollView.startContentOffset.x) / CGFloat(segmentsView.count - 1)) * CGFloat(selectedIndex)
+                    } else {
+                        scrollView.startContentOffset.x
+                    }
+                    CATransaction.performWithoutActions {
+                        scrollView.contentOffset = CGPoint(x: contentOffsetX, y: 0.0)
+                    }
+                }
+            } else {
+                layoutIfNeeded()
+                
                 let contentOffsetX = if let selectedIndex = state.selectedIndex {
                     scrollView.startContentOffset.x + ((scrollView.endContentOffset.x -  scrollView.startContentOffset.x) / CGFloat(segmentsView.count - 1)) * CGFloat(selectedIndex)
                 } else {
@@ -248,11 +294,21 @@ extension CategorySegmentedControl {
                     segmentView.state.isSelected = index == state.selectedIndex
                     scrollView.addSubview(segmentView)
                     segmentsView.append(segmentView)
+                    if context.isAnimated {
+                        segmentView.setNeedsAnimatedInputsChanges()
+                        segmentView.changesInputsIfNeeded()
+                    } else if !context.isDeferred {
+                        segmentView.changesInputsIfNeeded()
+                    }
                 }
             }
             
             flags.updatingConstraintsAsPartOfApplyConfiguration = true
             setNeedsUpdateConstraints()
+            
+            if context.isAnimated || !context.isDeferred {
+                layoutIfNeeded()
+            }
         }
     }
 }
@@ -354,7 +410,7 @@ final class CategorySegmentView: View {
         $0.textColor = tintColor
     }
     
-    private var currentAnimator: UIViewPropertyAnimator?
+    private(set) var currentAnimator: UIViewPropertyAnimator?
     
     private var nonselectedConstraints: [NSLayoutConstraint] = []
     
@@ -510,7 +566,7 @@ extension CategorySegmentView {
             flags.layoutSubviewsAsPartOfSelectChange = true
             setNeedsLayout()
             
-            currentAnimator = UIViewPropertyAnimator.runningPropertyAnimator(withDuration: 0.0, delay: 0.0) { [unowned self] in
+            currentAnimator = UIViewPropertyAnimator.runningPropertyAnimator(animation: .default1Spring) { [unowned self] in
                 if state.isSelected {
                     selectedIconImageView.transform = .identity
                     selectedTitleLabel.transform = .identity
@@ -528,9 +584,7 @@ extension CategorySegmentView {
                 }
                 
                 layoutIfNeeded()
-            } completion: { [unowned self] in
-                currentAnimator = nil
-                guard $0 == .end else { return }
+            } completion: { [unowned self] _ in
                 if state.isSelected {
                     iconImageView.isHidden = true
                     titleLabel.isHidden = true
@@ -538,6 +592,7 @@ extension CategorySegmentView {
                     selectedIconImageView.isHidden = true
                     selectedTitleLabel.isHidden = true
                 }
+                currentAnimator = nil
             }
         } else {
             if state.isSelected {
@@ -577,6 +632,10 @@ extension CategorySegmentView {
             
             flags.layoutSubviewsAsPartOfSelectChange = true
             setNeedsLayout()
+            
+            if !context.isDeferred {
+                layoutIfNeeded()
+            }
         }
     }
     
@@ -622,6 +681,10 @@ extension CategorySegmentView {
         
         flags.layoutSubviewsAsPartOfApplyConfiguration = true
         setNeedsLayout()
+        
+        if context.isAnimated || !context.isDeferred {
+            layoutIfNeeded()
+        }
     }
 }
 

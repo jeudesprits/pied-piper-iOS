@@ -125,19 +125,23 @@ final class HomeCollectionWrapperView: View {
 extension HomeCollectionWrapperView: HomeCollectionViewPagingDelegate {
     
     func collectionViewDidBeginPaging(_ collectionView: HomeCollectionView, from fromIndexPath: IndexPath, to toIndexPath: IndexPath) {
-        segmentedControl.startInteractiveTransition(toSelectedIndex: toIndexPath.item)
+        print(#function, fromIndexPath, toIndexPath)
+        segmentedControl.startInteractiveAnimation(toSelectedIndex: toIndexPath.item)
     }
     
     func collectionViewDidEndPaging(_ collectionView: HomeCollectionView, at indexPath: IndexPath) {
         if segmentedControl.state.selectedIndex == indexPath.item {
-            segmentedControl.finishInteractiveTransition()
+            print(#function, "finish", indexPath)
+            segmentedControl.finishInteractiveAnimation()
         } else {
-            segmentedControl.cancelInteractiveTransition()
+            print(#function, "cancel", indexPath)
+            segmentedControl.cancelInteractiveAnimation()
         }
     }
     
     func collectionViewDidPaging(_ collectionView: HomeCollectionView, withProgress progress: CGFloat) {
-        segmentedControl.updateInteractiveTransition(progress)
+        print(#function, progress)
+        segmentedControl.updateInteractiveAnimation(progress)
     }
 }
 
@@ -170,7 +174,7 @@ final class HomeCollectionView: CollectionView {
         if let pagingState {
             let fromContentOffsetX = bounds.width * CGFloat(pagingState.fromIndexPath.item)
             let toContentOffsetX = bounds.width * CGFloat(pagingState.toIndexPath.item)
-            let progress = (contentOffsetX - fromContentOffsetX) / (toContentOffsetX - fromContentOffsetX)
+            let progress = clamp((contentOffsetX - fromContentOffsetX) / (toContentOffsetX - fromContentOffsetX), min: 0.0, max: 1.0)
             self.pagingState!.progress = progress
             pagingDelegate?.collectionViewDidPaging(self, withProgress: progress)
             if progress == 0.0 {
