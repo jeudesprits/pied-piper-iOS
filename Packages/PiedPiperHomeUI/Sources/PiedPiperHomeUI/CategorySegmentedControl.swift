@@ -32,8 +32,6 @@ final class CategorySegmentedControl: Control {
     
     private var currentAnimator: UIViewPropertyAnimator?
     
-    private var currentScrollAnimator: DisplayLinkAnimator<CGFloat>?
-    
     private(set) var hasActiveInteractiveTransition = false
     
     func startInteractiveTransition(toSelectedIndex selectedIndex: Int) {

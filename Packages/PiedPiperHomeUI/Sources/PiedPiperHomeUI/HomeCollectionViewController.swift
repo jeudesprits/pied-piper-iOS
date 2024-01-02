@@ -7,8 +7,8 @@
 
 import SwiftUtilities
 import UIKit
-import UIKitUtilities
 import UIKitFoundation
+import UIKitUtilities
 
 final class HomeCollectionViewController: ViewController {
     
