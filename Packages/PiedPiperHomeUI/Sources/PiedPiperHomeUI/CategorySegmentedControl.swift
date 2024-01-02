@@ -356,7 +356,7 @@ final class CategorySegmentView: View {
         $0.textColor = tintColor
     }
     
-    var currentAnimator: UIViewPropertyAnimator?
+    private var currentAnimator: UIViewPropertyAnimator?
     
     private var nonselectedConstraints: [NSLayoutConstraint] = []
     
