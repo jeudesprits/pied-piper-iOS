@@ -22,7 +22,7 @@
 		558154DD2B0D579D00700ABF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		558154E82B0D901E00700ABF /* EntryPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryPoint.swift; sourceTree = "<group>"; };
 		558154F32B103D8600700ABF /* PiedPiperHomeUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperHomeUI; path = Packages/PiedPiperHomeUI; sourceTree = "<group>"; };
-		558154F42B103E6700700ABF /* PiedPiperFoundationUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperFoundationUI; path = Packages/PiedPiperFoundationUI; sourceTree = "<group>"; };
+		558154F42B103E6700700ABF /* UIKitFoundation */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UIKitFoundation; path = Packages/UIKitFoundation; sourceTree = "<group>"; };
 		558154F52B103ED400700ABF /* PiedPiperSharedUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = PiedPiperSharedUI; path = Packages/PiedPiperSharedUI; sourceTree = "<group>"; };
 		558154F62B103F2800700ABF /* UIKitUtilities */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = UIKitUtilities; path = Packages/UIKitUtilities; sourceTree = "<group>"; };
 		558154F72B103F2B00700ABF /* Tor */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Tor; path = Packages/Tor; sourceTree = "<group>"; };
@@ -63,13 +63,13 @@
 				558154F82B103F2F00700ABF /* TimingFunctions */,
 				558154F72B103F2B00700ABF /* Tor */,
 				5517B9092B16C6830093E17E /* Lexbor */,
+				558154F42B103E6700700ABF /* UIKitFoundation */,
 				558154F62B103F2800700ABF /* UIKitUtilities */,
 				558154FD2B1046E800700ABF /* PiedPiperApplication */,
 				558154FE2B1046E800700ABF /* PiedPiperApplicationDelegate */,
 				558155072B113C8900700ABF /* PiedPiperApplicationUI */,
 				558155062B10671800700ABF /* PiedPiperMainUI */,
 				558155052B1050A500700ABF /* PiedPiperCoreUI */,
-				558154F42B103E6700700ABF /* PiedPiperFoundationUI */,
 				558154F52B103ED400700ABF /* PiedPiperSharedUI */,
 				558154F32B103D8600700ABF /* PiedPiperHomeUI */,
 				550B3D182B11BA78002C3FB8 /* PiedPiperBrowseUI */,

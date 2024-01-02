@@ -30,12 +30,12 @@ let package = Package(
         .library(name: "PiedPiperApplicationUI", targets: ["PiedPiperApplicationUI"]),
     ],
     dependencies: [
-        .package(path: "../PiedPiperFoundationUI"),
+        .package(path: "../UIKitFoundation"),
         .package(path: "../PiedPiperMainUI"),
     ],
     targets: [
         .target(name: "PiedPiperApplicationUI", dependencies: [
-            "PiedPiperFoundationUI",
+            "UIKitFoundation",
             "PiedPiperMainUI"
         ]),
         .testTarget(name: "PiedPiperApplicationUITests", dependencies: ["PiedPiperApplicationUI"]),

@@ -35,7 +35,7 @@ let package = Package(
         .package(path: "../SwiftUtilities"),
         .package(url: "https://github.com/apple/swift-algorithms.git", branch: "main"),
         .package(path: "../UIKitUtilities"),
-        .package(path: "../PiedPiperFoundationUI"),
+        .package(path: "../UIKitFoundation"),
         .package(path: "../PiedPiperCoreUI"),
     ],
     targets: [
@@ -43,7 +43,7 @@ let package = Package(
             "SwiftUtilities",
             .product(name: "Algorithms", package: "swift-algorithms"),
             "UIKitUtilities",
-            "PiedPiperFoundationUI",
+            "UIKitFoundation",
             "PiedPiperCoreUI",
         ]),
         .testTarget(name: "PiedPiperHomeUITests", dependencies: ["PiedPiperHomeUI"]),

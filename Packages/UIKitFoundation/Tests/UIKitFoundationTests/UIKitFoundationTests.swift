@@ -1,7 +1,7 @@
 import XCTest
-@testable import PiedPiperFoundationUI
+@testable import UIKitFoundation
 
-final class PiedPiperFoundationUITests: XCTestCase {
+final class UIKitFoundationTests: XCTestCase {
     func testExample() throws {
         // XCTest Documentation
         // https://developer.apple.com/documentation/xctest

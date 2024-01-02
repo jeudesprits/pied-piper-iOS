@@ -8,8 +8,8 @@
 import SwiftUtilities
 import Algorithms
 import UIKit
+import UIKitFoundation
 import UIKitUtilities
-import PiedPiperFoundationUI
 
 final class CategorySegmentedControl: Control {
     

@@ -22,12 +22,12 @@ if ProcessInfo.processInfo.environment["SWIFT_TRACK_TYPECHECKING_TIME"] != nil {
 }
 
 let package = Package(
-    name: "PiedPiperFoundationUI",
+    name: "UIKitFoundation",
     platforms: [
         .iOS(.v17)
     ],
     products: [
-        .library(name: "PiedPiperFoundationUI", targets: ["PiedPiperFoundationUI"]),
+        .library(name: "UIKitFoundation", targets: ["UIKitFoundation"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections.git", branch: "main"),
@@ -36,13 +36,13 @@ let package = Package(
         .package(path: "../UIKitUtilities"),
     ],
     targets: [
-        .target(name: "PiedPiperFoundationUI", dependencies: [
+        .target(name: "UIKitFoundation", dependencies: [
             .product(name: "OrderedCollections", package: "swift-collections"),
             "SwiftUtilities",
             "osUtilities",
             "UIKitUtilities",
         ]),
-        .testTarget(name: "PiedPiperFoundationUITests", dependencies: ["PiedPiperFoundationUI"]),
+        .testTarget(name: "UIKitFoundationTests", dependencies: ["UIKitFoundation"]),
     ]
 )
 

@@ -9,7 +9,7 @@ import SwiftUtilities
 import UIKit
 import UIKit.UIGestureRecognizerSubclass
 import UIKitUtilities
-import PiedPiperFoundationUI
+import UIKitFoundation
 
 open class TabBarController: UITabBarController {
     

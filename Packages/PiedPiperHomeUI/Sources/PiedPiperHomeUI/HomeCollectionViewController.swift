@@ -8,7 +8,7 @@
 import SwiftUtilities
 import UIKit
 import UIKitUtilities
-import PiedPiperFoundationUI
+import UIKitFoundation
 
 final class HomeCollectionViewController: ViewController {
     

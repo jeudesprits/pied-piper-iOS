@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import PiedPiperFoundationUI
+import UIKitFoundation
 
 final class LibraryViewController: ViewController {
     

@@ -31,13 +31,13 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../UIKitUtilities"),
-        .package(path: "../PiedPiperFoundationUI"),
+        .package(path: "../UIKitFoundation"),
         .package(path: "../PiedPiperCoreUI"),
     ],
     targets: [
         .target(name: "PiedPiperLibraryUI", dependencies: [
             "UIKitUtilities",
-            "PiedPiperFoundationUI",
+            "UIKitFoundation",
             "PiedPiperCoreUI",
         ]),
         .testTarget(name: "PiedPiperLibraryUITests", dependencies: ["PiedPiperLibraryUI"]),

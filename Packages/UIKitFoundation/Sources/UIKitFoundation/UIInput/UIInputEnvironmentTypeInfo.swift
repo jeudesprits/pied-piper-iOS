@@ -29,15 +29,15 @@ struct UIInputEnvironmentTypeInfo {
         _forEachField(of: environmentType, options: [.classType, .ignoreUnknown]) { _, offset, type in
             if let type = type as? any StateObjectProperty.Type {
                 var typeName = _typeName(type)
-                typeName.trimPrefix("(extension in PiedPiperFoundationUI):__C.UIView.")
+                typeName.trimPrefix("(extension in UIKitFoundation):__C.UIView.")
                 stateObjectProperties_.append(StateObjectPropertyInfo(offset: offset, typeName: typeName, type: type))
             } else if let type = type as? any ConfigurationObjectProperty.Type {
                 var typeName = _typeName(type)
-                typeName.trimPrefix("(extension in PiedPiperFoundationUI):__C.UIView.")
+                typeName.trimPrefix("(extension in UIKitFoundation):__C.UIView.")
                 configurationObjectProperties_.append(ConfigurationObjectPropertyInfo(offset: offset, typeName: typeName, type: type))
             } else if let type = type as? any ObservedObjectProperty.Type {
                 var typeName = _typeName(type)
-                typeName.trimPrefix("(extension in PiedPiperFoundationUI):__C.UIView.")
+                typeName.trimPrefix("(extension in UIKitFoundation):__C.UIView.")
                 observedObjectProperties_.append(ObservedObjectPropertyInfo(offset: offset, typeName: typeName, type: type))
             }
             return true

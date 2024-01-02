@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import PiedPiperFoundationUI
+import UIKitFoundation
 import PiedPiperMainUI
 
 public final class ApplicationFlowController: ViewController {
