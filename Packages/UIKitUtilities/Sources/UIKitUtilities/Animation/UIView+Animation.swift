@@ -5,8 +5,9 @@
 //  Created by Ruslan Lutfullin on 15/04/23.
 //
 
-import UIKit
+import Tor
 import TimingFunctions
+import UIKit
 
 extension UIViewPropertyAnimator {
 	
@@ -35,7 +36,6 @@ extension UIViewPropertyAnimator {
 	}
 }
 
-///
 extension UIViewPropertyAnimator {
 	
 	public struct Animation {
@@ -228,4 +228,11 @@ extension UIViewPropertyAnimator.Animation: SpringVectorAnimation {
 		let timingParameters = UISpringTimingParameters(mass: spring.mass, stiffness: spring.stiffness, damping: spring.damping, initialVelocity: initialVelocity)
 		return .init(.springAnimation(settlingDuration: max(settlingDuration.0, settlingDuration.1), springTimingParameters: timingParameters))
 	}
+}
+
+extension UIView {
+    
+    public static var isInAnimation: Bool {
+        value(forKey: Tor.decode("TBLdGVGBFvMBHGWEHxD")) as! Bool
+    }
 }

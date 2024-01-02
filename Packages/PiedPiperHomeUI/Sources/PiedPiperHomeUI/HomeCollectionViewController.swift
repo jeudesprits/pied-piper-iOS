@@ -46,10 +46,9 @@ extension HomeCollectionViewController {
         }
     }
     
-    private func makeCollectionViewCellRegistration() -> UICollectionView.CellRegistration<UICollectionViewCell, Item> {
+    private func makeCollectionViewCellRegistration() -> UICollectionView.CellRegistration<HomeCollectionViewCell, Item> {
         UICollectionView.CellRegistration { cell, indexPath, itemIdentifier in
-            cell.layer.borderColor = UIColor.systemGreen.cgColor
-            cell.layer.borderWidth = 1.0
+            
         }
     }
 }
@@ -88,6 +87,22 @@ final class HomeCollectionWrapperView: View {
     override func setupCommon() {
         super.setupCommon()
         collectionView.pagingDelegate = self
+//        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(3)) {
+//            self.segmentedControl.state.selectedIndex = 1
+//            self.segmentedControl.setNeedsAnimatedInputsChanges()
+//        }
+//        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
+//            self.segmentedControl.state.selectedIndex = 2
+//            self.segmentedControl.setNeedsAnimatedInputsChanges()
+//        }
+//        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(7)) {
+//            self.segmentedControl.state.selectedIndex = 0
+//            self.segmentedControl.setNeedsAnimatedInputsChanges()
+//        }
+//        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(9)) {
+//            self.segmentedControl.state.selectedIndex = 3
+//           // self.segmentedControl.setNeedsAnimatedInputsChanges()
+//        }
     }
     
     override func setupConstraints() {
@@ -225,4 +240,24 @@ fileprivate protocol HomeCollectionViewPagingDelegate: AnyObject {
     func collectionViewDidEndPaging(_ collectionView: HomeCollectionView, at indexPath: IndexPath)
     
     func collectionViewDidPaging(_ collectionView: HomeCollectionView, withProgress progress: CGFloat)
+}
+
+final class HomeCollectionViewCell: CollectionViewCell {
+    
+    private let gradientLayer: CAGradientLayer = with(CAGradientLayer()) {
+        $0.startPoint = CGPoint(x: 0.0, y: 0.5)
+        $0.endPoint = CGPoint(x: 1.0, y: 0.5)
+        $0.type = .axial
+        $0.colors = [UIColor.systemBackground.cgColor, UIColor.secondarySystemBackground.cgColor]
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        gradientLayer.frame = bounds
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.layer.addSublayer(gradientLayer)
+    }
 }

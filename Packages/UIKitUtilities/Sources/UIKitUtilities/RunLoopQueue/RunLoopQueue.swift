@@ -16,25 +16,25 @@ final class RunLoopQueue {
     
     private let wakeUpSource: CFRunLoopSource
     
-    private var beforeWaitingObserver: CFRunLoopObserver!
+    private var observer: CFRunLoopObserver!
     
     private init() {
         var wakeUpSourceContext = CFRunLoopSourceContext()
         wakeUpSource = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &wakeUpSourceContext)
         CFRunLoopAddSource(CFRunLoopGetMain(), wakeUpSource, .commonModes)
         
-        beforeWaitingObserver = CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, CFRunLoopActivity.beforeWaiting.rawValue, true, 1_000_001) { [unowned(unsafe) self] _, _ in
+        observer = CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, 0xa0, true, 1_000_001) { [unowned(unsafe) self] _, _ in
             flushPerformTransactions()
         }
-        CFRunLoopAddObserver(CFRunLoopGetMain(), beforeWaitingObserver, .commonModes)
+        CFRunLoopAddObserver(CFRunLoopGetMain(), observer, .commonModes)
     }
     
     deinit {
         if CFRunLoopSourceIsValid(wakeUpSource) {
             CFRunLoopSourceInvalidate(wakeUpSource)
         }
-        if CFRunLoopObserverIsValid(beforeWaitingObserver) {
-            CFRunLoopObserverInvalidate(beforeWaitingObserver)
+        if CFRunLoopObserverIsValid(observer) {
+            CFRunLoopObserverInvalidate(observer)
         }
     }
 }

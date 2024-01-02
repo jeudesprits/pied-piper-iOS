@@ -124,7 +124,7 @@ public final class DisplayLinkAnimator<Value: InterpolatableData>: DisplayLink {
 	}
 	
 	@discardableResult
-	public static func runningAnimator(
+	public static func runningDisplayLinkAnimator(
 		from: Value,
 		to: Value,
 		delay: Double = 0.0,

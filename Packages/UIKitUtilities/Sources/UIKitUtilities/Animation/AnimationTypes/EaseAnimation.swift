@@ -7,7 +7,6 @@
 
 import TimingFunctions
 
-///
 public protocol EaseAnimation: Animation {
 	
 	static var defaultEase: Self { get }
@@ -44,7 +43,6 @@ extension EaseAnimation {
 	}
 }
 
-///
 public enum EaseAnimationMode {
 	case `in`
 	case out

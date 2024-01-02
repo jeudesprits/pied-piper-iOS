@@ -31,10 +31,10 @@ extension UIUnitPoint {
 
 extension UIUnitPoint {
     
+    /// Inspired by https://math.stackexchange.com/a/4041510/399217
+    /// Also see https://www.desmos.com/calculator/k13553cbgk
     @inlinable
     public init(angle: UIAngle) {
-        // Inspired by https://math.stackexchange.com/a/4041510/399217
-        // Also see https://www.desmos.com/calculator/k13553cbgk
         let (s, c) = (sin(angle.radians), cos(angle.radians))
         let clamp: (CGFloat, CGFloat) = (clamp(c / s, min: -1.0, max: 1.0), clamp(s / c, min: -1.0, max: 1.0))
         self.init(x: clamp.0 * copysign(1.0, s) * 0.5 + 0.5, y: clamp.1 * copysign(1.0, c) * 0.5 + 0.5)

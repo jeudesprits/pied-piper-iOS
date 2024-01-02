@@ -9,7 +9,5 @@ import Foundation
 
 public struct UIInputChangesContext {
     
-    public var isDeferred = true
-    
     public var isAnimated = false
 }

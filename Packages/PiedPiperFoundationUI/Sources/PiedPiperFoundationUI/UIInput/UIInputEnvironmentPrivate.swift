@@ -113,7 +113,7 @@ extension UIInputChangesSystem {
     }
     
     func changesIfNeeded() {
-        currentContext?.needsDeferredChanges = false
+//        currentContext?.needsDeferredChanges = false
         currentTransaction?.commit()
     }
     
@@ -338,7 +338,6 @@ extension UIInputChangesSystem {
             )
             
             var context = UIInputChangesContext()
-            context.isDeferred = currentContext.needsDeferredChanges
             context.isAnimated = currentContext.needsAnimatedChanges || currentContext.needsAnimatedChangesIdentifiers.contains(propertyIdentifier)
             currentContext.pendingChangesContexts[propertyIdentifier] = context
             
@@ -373,7 +372,6 @@ extension UIInputChangesSystem {
             )
             
             var context = UIInputChangesContext()
-            context.isDeferred = currentContext.needsDeferredChanges
             context.isAnimated = currentContext.needsAnimatedChanges || currentContext.needsAnimatedChangesIdentifiers.contains(propertyIdentifier)
             currentContext.pendingChangesContexts[propertyIdentifier] = context
             
@@ -399,7 +397,7 @@ extension UIInputChangesSystem {
     
     struct Context {
         
-        var needsDeferredChanges = true
+//        var needsDeferredChanges = true
         
         var pendingChangesIdentifiers: Set<UUID> = []
         

@@ -43,7 +43,7 @@ extension UIFont {
 		guard let descriptor = UIFont.systemFont(ofSize: fontSize, weight: weight).fontDescriptor
 			.withDesign(.rounded)
 		else { preconditionFailure() }
-		return .init(descriptor: descriptor, size: 0.0)
+		return UIFont(descriptor: descriptor, size: 0.0)
 	}
 	
 	public static func roundedSystemFont(forTextStyle style: TextStyle, weight: Weight? = nil) -> UIFont {
@@ -51,7 +51,7 @@ extension UIFont {
 			.addingAttributes([.traits: [UIFontDescriptor.TraitKey.weight: weight]])
 			.withDesign(.rounded)
 		else { preconditionFailure() }
-		return .init(descriptor: preferredDescriptor, size: 0.0)
+		return UIFont(descriptor: preferredDescriptor, size: 0.0)
 	}
 	
 	// MARK: -
@@ -60,7 +60,7 @@ extension UIFont {
 		guard let descriptor = UIFont.systemFont(ofSize: fontSize, weight: weight).fontDescriptor
 			.withDesign(.serif)
 		else { preconditionFailure() }
-		return .init(descriptor: descriptor, size: 0.0)
+		return UIFont(descriptor: descriptor, size: 0.0)
 	}
 	
 	public static func serifSystemFont(forTextStyle style: TextStyle, weight: Weight? = nil) -> UIFont {
@@ -68,32 +68,25 @@ extension UIFont {
 			.addingAttributes([.traits: [UIFontDescriptor.TraitKey.weight: weight]])
 			.withDesign(.serif)
 		else { preconditionFailure() }
-		return .init(descriptor: preferredDescriptor, size: 0.0)
+		return UIFont(descriptor: preferredDescriptor, size: 0.0)
 	}
 }
 
 extension UIFont {
 	
 	public func bold() -> UIFont {
-		let descriptor = fontDescriptor.withSymbolicTraits(
-			fontDescriptor.symbolicTraits.union(.traitItalic)
-		)!
-		return .init(descriptor: descriptor, size: 0.0)
+		let descriptor = fontDescriptor.withSymbolicTraits(fontDescriptor.symbolicTraits.union(.traitItalic))!
+		return UIFont(descriptor: descriptor, size: 0.0)
 	}
 	
 	public func italic() -> UIFont {
-		let descriptor = fontDescriptor.withSymbolicTraits(
-			fontDescriptor.symbolicTraits.union(.traitItalic)
-		)!
-		return .init(descriptor: descriptor, size: 0.0)
+		let descriptor = fontDescriptor.withSymbolicTraits(fontDescriptor.symbolicTraits.union(.traitItalic))!
+		return UIFont(descriptor: descriptor, size: 0.0)
 	}
 	
 	public func leading(_ leading: Leading) -> UIFont {
-		
-		let descriptor = fontDescriptor.withSymbolicTraits(
-			fontDescriptor.symbolicTraits.union(leading == .loose ? .traitLooseLeading : .traitTightLeading)
-		)!
-		return UIFont(descriptor: descriptor, size: 0)
+		let descriptor = fontDescriptor.withSymbolicTraits(fontDescriptor.symbolicTraits.union(leading == .loose ? .traitLooseLeading : .traitTightLeading))!
+        return UIFont(descriptor: descriptor, size: 0.0)
 	}
 	
 	public func smallCaps() -> UIFont {
@@ -109,7 +102,7 @@ extension UIFont {
 				]
 			]
 		])
-		return UIFont(descriptor: descriptor, size: 0)
+        return UIFont(descriptor: descriptor, size: 0.0)
 	}
 	
 	public func lowercaseSmallCaps() -> UIFont {
@@ -121,7 +114,7 @@ extension UIFont {
 				]
 			]
 		])
-		return UIFont(descriptor: descriptor, size: 0)
+        return UIFont(descriptor: descriptor, size: 0.0)
 	}
 	
 	public func uppercaseSmallCaps() -> UIFont {
@@ -133,14 +126,16 @@ extension UIFont {
 				]
 			]
 		])
-		return UIFont(descriptor: descriptor, size: 0)
+        return UIFont(descriptor: descriptor, size: 0.0)
 	}
 }
 
 extension UIFont {
 	
 	public enum Leading {
+        
 		case loose
+        
 		case tight
 	}
 }
