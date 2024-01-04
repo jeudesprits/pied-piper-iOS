@@ -20,7 +20,7 @@ final class CategorySegmentedControl: Control {
     
     @ConfigurationObject var configuration: Configuration?
     
-    private let scrollView: ScrollView = with(ScrollView(frame: .zero)) {
+    private let scrollView: CategoryScrollView = with(CategoryScrollView(frame: .zero)) {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.alwaysBounceHorizontal = true
         $0.delaysContentTouches = false
@@ -40,6 +40,7 @@ final class CategorySegmentedControl: Control {
         assert(currentAnimator == nil)
         let previousSelectedIndex = state.selectedIndex
         state.selectedIndex = selectedIndex
+        sendActions(for: .primaryActionTriggered)
         setNeedsAnimatedInputsChanges()
         changesInputsIfNeeded()
         assert(currentAnimator != nil)
@@ -174,6 +175,7 @@ final class CategorySegmentedControl: Control {
     override func setupCommon() {
         super.setupCommon()
         addSubview(scrollView)
+        scrollView.delegatePrivate = self
         
         registerForStateChanges(in: &$state) { [unowned self] previousState, context in
             applyState(previousState, with: context)
@@ -196,10 +198,10 @@ final class CategorySegmentedControl: Control {
         ])
     }
     
-    init(frame: CGRect, configuration: Configuration? = nil) {
+    init(frame: CGRect, configuration: Configuration? = nil, primaryAction: UIAction) {
         _state = .init(wrappedValue: State())
         _configuration = .init(wrappedValue: configuration)
-        super.init(frame: frame, primaryAction: UIAction { _ in })
+        super.init(frame: frame, primaryAction: primaryAction)
     }
 }
 
@@ -369,6 +371,16 @@ extension CategorySegmentedControl {
     }
 }
 
+extension CategorySegmentedControl: CategoryScrollViewDelegatePrivate {
+    
+    fileprivate func categoryScrollView(_ scrollView: CategoryScrollView, didSelectSegment segmentView: CategorySegmentView) {
+        guard let selectedIndex = segmentsView.firstIndex(of: segmentView) else { preconditionFailure() }
+        state.selectedIndex = selectedIndex
+        sendActions(for: .primaryActionTriggered)
+        setNeedsAnimatedInputsChanges()
+    }
+}
+
 extension CategorySegmentedControl.Configuration {
     
     struct Item: Hashable {
@@ -379,10 +391,51 @@ extension CategorySegmentedControl.Configuration {
     }
 }
 
-final class CategorySegmentView: View {
+fileprivate final class CategoryScrollView: ScrollView {
+    
+    private lazy var tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTap(sender:)))
+    
+    weak var delegatePrivate: (any CategoryScrollViewDelegatePrivate)?
+    
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        for subview in subviews {
+            guard CGRect(origin: CGPoint(x: subview.frame.minX, y: 0.0), size: CGSize(width: subview.bounds.width, height: bounds.height)).contains(point) else { continue }
+            return subview
+        }
+        return super.hitTest(point, with: event)
+    }
+    
+    @objc
+    private func didTap(sender: UITapGestureRecognizer) {
+        guard sender.state == .recognized else { return }
+        let location = sender.location(in: self)
+        for subview in subviews {
+            guard CGRect(origin: CGPoint(x: subview.frame.minX, y: 0.0), size: CGSize(width: subview.bounds.width, height: bounds.height)).contains(location) else { continue }
+            delegatePrivate?.categoryScrollView(self, didSelectSegment: subview as! CategorySegmentView)
+            return
+        }
+    }
+    
+    override func setupCommon() {
+        super.setupCommon()
+        alwaysBounceHorizontal = true
+        delaysContentTouches = false
+        showsHorizontalScrollIndicator = false
+        showsVerticalScrollIndicator = false
+        addGestureRecognizer(tapGestureRecognizer)
+    }
+}
+
+fileprivate protocol CategoryScrollViewDelegatePrivate: UIScrollViewDelegate {
+    
+    func categoryScrollView(_ scrollView: CategoryScrollView, didSelectSegment segmentView: CategorySegmentView)
+}
+
+fileprivate final class CategorySegmentView: View {
     
     private var flags = Flags()
     
+    @_nonoverride
     @StateObject var state: State
     
     @ConfigurationObject var configuration: Configuration?
@@ -429,16 +482,19 @@ final class CategorySegmentView: View {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         state.isHighlighted = true
         setNeedsAnimatedInputsChanges()
+        changesInputsIfNeeded()
     }
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         state.isHighlighted = false
         setNeedsAnimatedInputsChanges()
+        changesInputsIfNeeded()
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         state.isHighlighted = false
         setNeedsAnimatedInputsChanges()
+        changesInputsIfNeeded()
     }
     
     override func updatingConstraints() {
@@ -549,13 +605,9 @@ extension CategorySegmentView {
     private func selectedDidChange(_ previousSelected: Bool?, with context: UIInputChangesContext) {
         if context.isAnimated {
             if state.isSelected {
-                selectedIconImageView.isHidden = false
-                selectedTitleLabel.isHidden = false
                 bringSubviewToFront(selectedIconImageView)
                 bringSubviewToFront(selectedTitleLabel)
             } else {
-                iconImageView.isHidden = false
-                titleLabel.isHidden = false
                 bringSubviewToFront(iconImageView)
                 bringSubviewToFront(titleLabel)
             }
@@ -585,19 +637,10 @@ extension CategorySegmentView {
                 
                 layoutIfNeeded()
             } completion: { [unowned self] _ in
-                if state.isSelected {
-                    iconImageView.isHidden = true
-                    titleLabel.isHidden = true
-                } else {
-                    selectedIconImageView.isHidden = true
-                    selectedTitleLabel.isHidden = true
-                }
                 currentAnimator = nil
             }
         } else {
             if state.isSelected {
-                selectedIconImageView.isHidden = false
-                selectedTitleLabel.isHidden = false
                 bringSubviewToFront(selectedIconImageView)
                 bringSubviewToFront(selectedTitleLabel)
                 
@@ -607,12 +650,7 @@ extension CategorySegmentView {
                 titleLabel.alpha = 0.0
                 selectedIconImageView.alpha = 1.0
                 selectedTitleLabel.alpha = 1.0
-                
-                iconImageView.isHidden = true
-                titleLabel.isHidden = true
             } else {
-                iconImageView.isHidden = false
-                titleLabel.isHidden = false
                 bringSubviewToFront(iconImageView)
                 bringSubviewToFront(titleLabel)
                 
@@ -622,9 +660,6 @@ extension CategorySegmentView {
                 titleLabel.alpha = 1.0
                 selectedIconImageView.alpha = 0.0
                 selectedTitleLabel.alpha = 0.0
-                
-                selectedIconImageView.isHidden = true
-                selectedTitleLabel.isHidden = true
             }
             
             flags.updatingConstraintAsPartOfSelectChange = true

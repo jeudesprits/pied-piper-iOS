@@ -69,7 +69,10 @@ final class HomeCollectionWrapperView: View {
             .init(iconImage: UIImage(resource: .icons8WalterWhite), title: "Сериалы"),
             .init(iconImage: UIImage(resource: .icons8PatrickStar), title: "Мультфильмы"),
             .init(iconImage: UIImage(resource: .icons8MyMelody), title: "Аниме"),
-        ])
+        ]),
+        primaryAction: UIAction { _ in
+            
+        }
     )) {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.state.selectedIndex = 0
@@ -125,22 +128,18 @@ final class HomeCollectionWrapperView: View {
 extension HomeCollectionWrapperView: HomeCollectionViewPagingDelegate {
     
     func collectionViewDidBeginPaging(_ collectionView: HomeCollectionView, from fromIndexPath: IndexPath, to toIndexPath: IndexPath) {
-        print(#function, fromIndexPath, toIndexPath)
         segmentedControl.startInteractiveAnimation(toSelectedIndex: toIndexPath.item)
     }
     
     func collectionViewDidEndPaging(_ collectionView: HomeCollectionView, at indexPath: IndexPath) {
         if segmentedControl.state.selectedIndex == indexPath.item {
-            print(#function, "finish", indexPath)
             segmentedControl.finishInteractiveAnimation()
         } else {
-            print(#function, "cancel", indexPath)
             segmentedControl.cancelInteractiveAnimation()
         }
     }
     
     func collectionViewDidPaging(_ collectionView: HomeCollectionView, withProgress progress: CGFloat) {
-        print(#function, progress)
         segmentedControl.updateInteractiveAnimation(progress)
     }
 }
