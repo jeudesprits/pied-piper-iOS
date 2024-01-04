@@ -315,6 +315,17 @@ extension CategorySegmentedControl {
     }
 }
 
+extension CategorySegmentedControl: CategoryScrollViewDelegatePrivate {
+    
+    fileprivate func categoryScrollView(_ scrollView: CategoryScrollView, didSelectSegment segmentView: CategorySegmentView) {
+        guard let selectedIndex = segmentsView.firstIndex(of: segmentView) else { preconditionFailure() }
+        state.selectedIndex = selectedIndex
+        sendActions(for: .primaryActionTriggered)
+        setNeedsAnimatedInputsChanges()
+        changesInputsIfNeeded()
+    }
+}
+
 extension CategorySegmentedControl {
     
     private struct Flags {
@@ -368,16 +379,6 @@ extension CategorySegmentedControl {
             _contentInset = other._contentInset
             super.init(copy: other)
         }
-    }
-}
-
-extension CategorySegmentedControl: CategoryScrollViewDelegatePrivate {
-    
-    fileprivate func categoryScrollView(_ scrollView: CategoryScrollView, didSelectSegment segmentView: CategorySegmentView) {
-        guard let selectedIndex = segmentsView.firstIndex(of: segmentView) else { preconditionFailure() }
-        state.selectedIndex = selectedIndex
-        sendActions(for: .primaryActionTriggered)
-        setNeedsAnimatedInputsChanges()
     }
 }
 
